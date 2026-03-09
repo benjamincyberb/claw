@@ -2044,6 +2044,86 @@ def assets_upload():
         return jsonify({"ok": False, "msg": str(e)}), 500
 
 
+# ═══════════════════════════════════════════════════
+# Degen-Office Web3 API Endpoints
+# ═══════════════════════════════════════════════════
+
+@app.route("/api/web3/config", methods=["GET"])
+def web3_config():
+    """Serve contract addresses and chain config for frontend."""
+    contracts_file = os.path.join(ROOT_DIR, "contracts", "deployed-addresses.json")
+    if os.path.exists(contracts_file):
+        with open(contracts_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return jsonify({"ok": True, "data": data})
+    return jsonify({"ok": False, "msg": "No deployed contracts found. Run deploy script first."})
+
+
+@app.route("/api/ipfs/upload", methods=["POST"])
+def ipfs_upload():
+    """Upload content to IPFS via Pinata API (or mock in dev mode).
+
+    Accepts multipart form data with a 'file' field.
+    Returns { ok, cid, url }.
+    """
+    import hashlib
+    import time
+
+    pinata_jwt = os.getenv("PINATA_JWT", "").strip()
+    uploaded_file = request.files.get("file")
+
+    if not uploaded_file:
+        return jsonify({"ok": False, "msg": "No file provided"}), 400
+
+    file_content = uploaded_file.read()
+
+    # If no Pinata JWT, return a mock CID based on content hash
+    if not pinata_jwt:
+        content_hash = hashlib.sha256(file_content).hexdigest()
+        mock_cid = "Qm" + content_hash[:44]
+        return jsonify({
+            "ok": True,
+            "cid": mock_cid,
+            "url": f"https://gateway.pinata.cloud/ipfs/{mock_cid}",
+            "mock": True,
+            "msg": "Mock mode: set PINATA_JWT env var for real IPFS upload"
+        })
+
+    # Real Pinata upload
+    try:
+        import urllib.request
+        import urllib.error
+
+        boundary = f"----DegenOfficeBoundary{int(time.time() * 1000)}"
+        filename = uploaded_file.filename or "upload.txt"
+
+        body = (
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="file"; filename="{filename}"\r\n'
+            f"Content-Type: application/octet-stream\r\n\r\n"
+        ).encode("utf-8") + file_content + f"\r\n--{boundary}--\r\n".encode("utf-8")
+
+        req = urllib.request.Request(
+            "https://api.pinata.cloud/pinning/pinFileToIPFS",
+            data=body,
+            headers={
+                "Authorization": f"Bearer {pinata_jwt}",
+                "Content-Type": f"multipart/form-data; boundary={boundary}",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+        cid = result.get("IpfsHash", "")
+        return jsonify({
+            "ok": True,
+            "cid": cid,
+            "url": f"https://gateway.pinata.cloud/ipfs/{cid}"
+        })
+    except Exception as e:
+        return jsonify({"ok": False, "msg": f"IPFS upload failed: {str(e)}"}), 500
+
+
 if __name__ == "__main__":
     raw_port = os.environ.get("STAR_BACKEND_PORT", "19000")
     try:
