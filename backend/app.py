@@ -3,15 +3,21 @@
 
 from flask import Flask, jsonify, send_from_directory, make_response, request, session
 from datetime import datetime, timedelta
+import base64
+import hashlib
+import hmac
 import json
+import math
 import os
 import random
-import math
 import re
 import shutil
 import subprocess
 import tempfile
 import threading
+import urllib.error
+import urllib.parse
+import urllib.request
 from pathlib import Path
 from security_utils import is_production_mode, is_strong_secret, is_strong_drawer_pass
 from memo_utils import get_yesterday_date_str, sanitize_content, extract_memo_from_file
@@ -359,6 +365,60 @@ def _save_home_favorites_index(data):
     _ensure_home_favorites_index()
     with open(HOME_FAVORITES_INDEX_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def _okx_required_env():
+    return {
+        "api_key": os.getenv("OKX_API_KEY", "d7b6d357-802a-43f4-9ad3-d95082d95f11").strip(),
+        "secret_key": os.getenv("OKX_SECRET_KEY", "031412764C6B14177288C293D9B3220F").strip(),
+        "passphrase": os.getenv("OKX_PASSPHRASE", "B1234567a@!").strip(),
+        "project_id": os.getenv("OKX_PROJECT_ID", "claw").strip(),
+        "chains": os.getenv("OKX_CHAIN_INDEXES", "196").strip(),
+    }
+
+
+def _okx_timestamp():
+    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+
+def _okx_signature(secret_key, timestamp, method, request_path, body):
+    payload = f"{timestamp}{method}{request_path}{body}"
+    signature = hmac.new(secret_key.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).digest()
+    return base64.b64encode(signature).decode("utf-8")
+
+
+def _okx_request(method, path, query=None, body=None):
+    env = _okx_required_env()
+    if not env["api_key"] or not env["secret_key"] or not env["passphrase"]:
+        return {"ok": False, "msg": "OKX credentials not configured"}
+    query_str = urllib.parse.urlencode(query or {})
+    request_path = path + (f"?{query_str}" if query_str else "")
+    url = "https://web3.okx.com" + request_path
+    body_str = json.dumps(body) if body is not None else ""
+    timestamp = _okx_timestamp()
+    signature = _okx_signature(env["secret_key"], timestamp, method, request_path, body_str)
+    headers = {
+        "Content-Type": "application/json",
+        "OK-ACCESS-KEY": env["api_key"],
+        "OK-ACCESS-SIGN": signature,
+        "OK-ACCESS-TIMESTAMP": timestamp,
+        "OK-ACCESS-PASSPHRASE": env["passphrase"],
+    }
+    if env["project_id"]:
+        headers["OK-ACCESS-PROJECT"] = env["project_id"]
+    req = urllib.request.Request(url, data=(body_str.encode("utf-8") if body_str else None), headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        try:
+            raw = e.read().decode("utf-8")
+            parsed = json.loads(raw)
+            return {"ok": False, "msg": parsed.get("msg") or f"HTTP {e.code}", "detail": parsed}
+        except Exception:
+            return {"ok": False, "msg": f"HTTP {e.code}"}
+    except Exception as e:
+        return {"ok": False, "msg": str(e)}
 
 
 def _maybe_apply_random_home_favorite():
@@ -2059,6 +2119,151 @@ def web3_config():
     return jsonify({"ok": False, "msg": "No deployed contracts found. Run deploy script first."})
 
 
+@app.route("/api/onchainos/portfolio", methods=["GET"])
+def onchainos_portfolio():
+    address = (request.args.get("address") or "").strip()
+    if not address:
+        return jsonify({"ok": False, "msg": "Missing address"}), 400
+    env = _okx_required_env()
+    chains = (request.args.get("chains") or env["chains"]).strip()
+    total_resp = _okx_request(
+        "GET",
+        "/api/v5/wallet/asset/total-value-by-address",
+        {"address": address, "chains": chains, "assetType": "1"},
+    )
+    balances_resp = _okx_request(
+        "GET",
+        "/api/v5/wallet/asset/all-token-balances-by-address",
+        {"address": address, "chains": chains, "filter": "0"},
+    )
+    if not isinstance(total_resp, dict) or total_resp.get("code") not in ("0", 0):
+        if isinstance(total_resp, dict):
+            code = total_resp.get("code", "unknown")
+            msg = total_resp.get("msg", "Failed to fetch total value")
+            msg = f"{code}: {msg}"
+        else:
+            msg = "Failed to fetch total value"
+        return jsonify({"ok": False, "msg": msg}), 500
+    if not isinstance(balances_resp, dict) or balances_resp.get("code") not in ("0", 0):
+        if isinstance(balances_resp, dict):
+            code = balances_resp.get("code", "unknown")
+            msg = balances_resp.get("msg", "Failed to fetch balances")
+            msg = f"{code}: {msg}"
+        else:
+            msg = "Failed to fetch balances"
+        return jsonify({"ok": False, "msg": msg}), 500
+    total_value = None
+    try:
+        total_value = str((balances_resp.get("data") or [{}])[0].get("totalValue", "")).strip()
+    except Exception:
+        total_value = ""
+    if not total_value:
+        try:
+            total_value = str((total_resp.get("data") or [{}])[0].get("totalValue", "")).strip()
+        except Exception:
+            total_value = ""
+    token_assets = []
+    try:
+        token_assets = (balances_resp.get("data") or [{}])[0].get("tokenAssets") or []
+    except Exception:
+        token_assets = []
+    tokens = []
+    for t in token_assets:
+        symbol = (t.get("symbol") or t.get("tokenSymbol") or "").strip()
+        balance = t.get("balance") or t.get("availableAmount") or t.get("rawBalance") or "0"
+        price = t.get("tokenPrice") or "0"
+        icon = t.get("tokenLogoUrl") or t.get("logoUrl") or "https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png"
+        try:
+            value_usd = float(balance) * float(price)
+        except Exception:
+            value_usd = 0
+        if not symbol:
+            symbol = (t.get("tokenAddress") or "")[:6] or "UNKNOWN"
+        tokens.append({
+            "symbol": symbol,
+            "balance": balance,
+            "valueUsd": value_usd,
+            "icon": icon,
+        })
+    tokens.sort(key=lambda x: x.get("valueUsd", 0), reverse=True)
+    return jsonify({
+        "ok": True,
+        "data": {
+            "totalValueUsd": total_value or str(sum(t["valueUsd"] for t in tokens)),
+            "change24h": "—",
+            "tokens": tokens[:20],
+        }
+    })
+
+
+@app.route("/api/onchainos/transactions", methods=["GET"])
+def onchainos_transactions():
+    address = (request.args.get("address") or "").strip()
+    if not address:
+        return jsonify({"ok": False, "msg": "Missing address"}), 400
+    env = _okx_required_env()
+    chains = (request.args.get("chains") or env["chains"]).strip()
+    limit = (request.args.get("limit") or "20").strip()
+    tx_resp = _okx_request(
+        "GET",
+        "/api/v5/wallet/post-transaction/transactions-by-address",
+        {"address": address, "chains": chains, "limit": limit},
+    )
+    if not isinstance(tx_resp, dict) or tx_resp.get("code") not in ("0", 0):
+        if isinstance(tx_resp, dict):
+            code = tx_resp.get("code", "unknown")
+            msg = tx_resp.get("msg", "Failed to fetch transactions")
+            msg = f"{code}: {msg}"
+        else:
+            msg = "Failed to fetch transactions"
+        return jsonify({"ok": False, "msg": msg}), 500
+    tx_list = []
+    try:
+        tx_list = (tx_resp.get("data") or [{}])[0].get("transactionList") or []
+    except Exception:
+        tx_list = []
+    return jsonify({"ok": True, "data": {"transactions": tx_list}})
+
+
+@app.route("/api/onchainos/market-trends", methods=["GET"])
+def onchainos_market_trends():
+    env = _okx_required_env()
+    chains = (request.args.get("chains") or env["chains"]).strip()
+    sort_by = (request.args.get("sortBy") or "2").strip()
+    time_frame = (request.args.get("timeFrame") or "4").strip()
+    limit = int(request.args.get("limit") or 5)
+    trends_resp = _okx_request(
+        "GET",
+        "/api/v6/dex/market/token/toplist",
+        {"chains": chains, "sortBy": sort_by, "timeFrame": time_frame},
+    )
+    if not isinstance(trends_resp, dict) or trends_resp.get("code") not in ("0", 0):
+        if isinstance(trends_resp, dict):
+            code = trends_resp.get("code", "unknown")
+            msg = trends_resp.get("msg", "Failed to fetch market trends")
+            msg = f"{code}: {msg}"
+        else:
+            msg = "Failed to fetch market trends"
+        return jsonify({"ok": False, "msg": msg}), 500
+    items = trends_resp.get("data") or []
+    hot = []
+    for idx, item in enumerate(items[:max(limit, 1)]):
+        change = str(item.get("change") or "").strip()
+        if change and not change.startswith(("+", "-")):
+            change = f"+{change}"
+        if change and not change.endswith("%"):
+            change = f"{change}%"
+        price = str(item.get("price") or "").strip()
+        hot.append({
+            "rank": idx + 1,
+            "symbol": item.get("tokenSymbol") or item.get("symbol") or "UNKNOWN",
+            "price": f"${price}" if price else "—",
+            "change": change or "—",
+            "icon": item.get("tokenLogoUrl") or "",
+        })
+    return jsonify({"ok": True, "data": {"hot": hot}})
+
+
 @app.route("/api/ipfs/upload", methods=["POST"])
 def ipfs_upload():
     """Upload content to IPFS via Pinata API (or mock in dev mode).
@@ -2159,4 +2364,3 @@ if __name__ == "__main__":
     print("=" * 50)
 
     app.run(host="0.0.0.0", port=backend_port, debug=False)
-
