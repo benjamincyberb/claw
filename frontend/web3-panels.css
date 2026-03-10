@@ -636,6 +636,12 @@
   margin-bottom: 20px;
 }
 
+.web3-modal label {
+  font-family: var(--degen-pixel);
+  font-size: 12px;
+  color: #ffffff;
+}
+
 .web3-modal input,
 .web3-modal textarea {
   width: 100%;
@@ -802,50 +808,9 @@
   }
 }
 
-@keyframes modalSlideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes typewriter {
-  from {
-    width: 0;
-  }
-
-  to {
-    width: 100%;
-  }
-}
-
-@keyframes blink-caret {
-
-  from,
-  to {
-    border-color: transparent;
-  }
-
-  50% {
-    border-color: var(--degen-green);
-  }
-}
-
-/* ── Responsive ── */
 @media (max-width: 768px) {
   #web3-wallet-bar {
-    padding: 6px 12px;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  #web3-wallet-bar .logo-text {
-    font-size: 8px;
+    padding: 8px 12px;
   }
 
   #web3-nav-tabs {
@@ -874,4 +839,201 @@
     padding: 16px 32px;
     font-size: 11px;
   }
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── Onchain OS Panel ── */
+#panel-onchainos {
+  display: none;
+}
+
+#panel-onchainos.active {
+  display: block;
+}
+
+.onchain-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 20px;
+}
+
+.portfolio-header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(6, 182, 212, 0.1));
+  border: 1px solid var(--degen-border);
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.portfolio-value {
+  font-family: var(--degen-pixel);
+  font-size: 32px;
+  color: var(--degen-green);
+  text-shadow: 0 0 20px var(--degen-green-glow);
+}
+
+.portfolio-label {
+  font-family: var(--degen-mono);
+  font-size: 12px;
+  color: var(--degen-text-dim);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.portfolio-change {
+  font-family: var(--degen-mono);
+  font-size: 14px;
+  color: var(--degen-green);
+  font-weight: 700;
+}
+
+.onchain-section {
+  background: var(--degen-panel);
+  border: 1px solid var(--degen-border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.onchain-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--degen-mono);
+  font-size: 12px;
+}
+
+.onchain-table th {
+  text-align: left;
+  color: var(--degen-text-dim);
+  padding: 8px;
+  border-bottom: 1px solid rgba(100, 116, 139, 0.1);
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.onchain-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(100, 116, 139, 0.05);
+  color: var(--degen-text);
+  vertical-align: middle;
+}
+
+.onchain-table tbody tr {
+  transition: background 0.2s;
+}
+
+.onchain-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.token-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.token-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.market-trend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(100, 116, 139, 0.1);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.market-trend-item:hover {
+  background: rgba(34, 197, 94, 0.05);
+  border-color: var(--degen-border-hover);
+}
+
+.trend-rank {
+  font-family: var(--degen-pixel);
+  font-size: 10px;
+  color: var(--degen-gold);
+  width: 24px;
+}
+
+.trend-info {
+  flex: 1;
+}
+
+.trend-symbol {
+  font-weight: 700;
+  color: var(--degen-text);
+}
+
+.trend-stats {
+  text-align: right;
+}
+
+.trend-price {
+  font-size: 12px;
+  color: var(--degen-text);
+  display: block;
+}
+
+.trend-change {
+  font-size: 11px;
+}
+
+.trend-change.positive {
+  color: var(--degen-green);
+}
+
+.trend-change.negative {
+  color: var(--degen-red);
+}
+
+.btn-transfer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid var(--degen-green);
+  border-radius: 6px;
+  color: var(--degen-green);
+  font-family: var(--degen-mono);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-transfer:hover {
+  background: var(--degen-green);
+  color: #000;
+  box-shadow: 0 0 10px var(--degen-green-glow);
+  transform: translateY(-1px);
+}
+
+.btn-transfer:active {
+  transform: translateY(0);
 }

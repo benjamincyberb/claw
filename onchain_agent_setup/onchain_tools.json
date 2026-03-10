@@ -21,16 +21,28 @@
       "parameters": {
         "type": "object",
         "properties": {
-          "description": { "type": "string", "description": "任务描述" },
-          "amount": { "type": "string", "description": "赏金数量 (单位: Wei)" }
+          "description": {
+            "type": "string",
+            "description": "任务描述"
+          },
+          "amount": {
+            "type": "string",
+            "description": "赏金数量 (单位: Wei)"
+          }
         },
-        "required": ["description", "amount"]
+        "required": [
+          "description",
+          "amount"
+        ]
       },
       "handler": {
         "type": "onchain_transaction",
         "contract": "PLEASE_REPLACE_WITH_BOUNTY_ESCROW_ADDRESS",
         "function": "createBounty",
-        "args": ["{description}", "{amount}"]
+        "args": [
+          "{description}",
+          "{amount}"
+        ]
       }
     },
     {
@@ -45,7 +57,86 @@
         "type": "onchain_transaction",
         "contract": "0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e",
         "function": "balanceOf",
-        "args": ["{agent_address}"]
+        "args": [
+          "{agent_address}"
+        ]
+      }
+    },
+    {
+      "name": "get_portfolio_value",
+      "description": "获取当前钱包内所有资产的总美元价值",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "钱包地址 (可选，默认当前 Agent 钱包)"
+          }
+        }
+      },
+      "handler": {
+        "type": "onchain_read",
+        "category": "wallet",
+        "action": "balance-total-value"
+      }
+    },
+    {
+      "name": "get_token_balances",
+      "description": "获取详细的代币余额列表",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "钱包地址"
+          }
+        }
+      },
+      "handler": {
+        "type": "onchain_read",
+        "category": "wallet",
+        "action": "balance-token-balances"
+      }
+    },
+    {
+      "name": "get_transaction_history",
+      "description": "查询最近的链上交易记录",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "钱包地址"
+          }
+        }
+      },
+      "handler": {
+        "type": "onchain_read",
+        "category": "wallet",
+        "action": "tx-history"
+      }
+    },
+    {
+      "name": "get_market_trends",
+      "description": "获取当前市场的热门代币和行情排名",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "排名类型 (e.g. 'hot', 'gainers')",
+            "enum": [
+              "hot",
+              "gainers",
+              "volume"
+            ]
+          }
+        }
+      },
+      "handler": {
+        "type": "onchain_read",
+        "category": "market",
+        "action": "token-ranking"
       }
     }
   ]

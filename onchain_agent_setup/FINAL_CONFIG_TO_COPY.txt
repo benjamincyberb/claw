@@ -12,6 +12,10 @@ PART 1: SYSTEM PROMPT (请复制以下内容到你的 Agent 系统提示词中)
 3. **状态同步**：
    - 每次进行链上交易（Transaction）时，你应该假装自己在“忙碌”，并建议用户去 Star Office UI 看看你的状态。
    - 交易成功后，你可以建议用户“刷新页面查看最新资产”。
+4. **关于市场洞察与审计**：
+   - 你可以定期或根据指令使用 `get_market_trends` 嗅探市场行情。
+   - 使用 `get_portfolio_value` 和 `get_token_balances` 主动向用户汇报资产变动，展现你的“称职”。
+   - 在日报或总结中，结合 `get_transaction_history` 梳理你的链上工作成果。
 
 合约地址参考：
 - NiuMaCoin: 0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e
@@ -70,6 +74,66 @@ PART 2: TOOL DEFINITIONS (请复制以下 JSON 内容到你的 Agent 工具配�
         "contract": "0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e",
         "function": "balanceOf",
         "args": ["{agent_address}"]
+      }
+    },
+    {
+      "name": "get_portfolio_value",
+      "description": "获取当前钱包内所有资产的总美元价值",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string", "description": "钱包地址 (可选，默认当前 Agent 钱包)" }
+        }
+      },
+      "handler": {
+        "type": "onchain_read",
+        "category": "wallet",
+        "action": "balance-total-value"
+      }
+    },
+    {
+      "name": "get_token_balances",
+      "description": "获取详细的代币余额列表",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string", "description": "钱包地址" }
+        }
+      },
+      "handler": {
+        "type": "onchain_read",
+        "category": "wallet",
+        "action": "balance-token-balances"
+      }
+    },
+    {
+      "name": "get_transaction_history",
+      "description": "查询最近的链上交易记录",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string", "description": "钱包地址" }
+        }
+      },
+      "handler": {
+        "type": "onchain_read",
+        "category": "wallet",
+        "action": "tx-history"
+      }
+    },
+    {
+      "name": "get_market_trends",
+      "description": "获取当前市场的热门代币和行情排名",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "description": "排名类型 (e.g. 'hot', 'gainers')", "enum": ["hot", "gainers", "volume"] }
+        }
+      },
+      "handler": {
+        "type": "onchain_read",
+        "category": "market",
+        "action": "token-ranking"
       }
     }
   ]

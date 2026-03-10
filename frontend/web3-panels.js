@@ -50,6 +50,9 @@ const DegenPanels = (() => {
         <button class="web3-tab" data-tab="ipfs" onclick="DegenPanels.switchTab('ipfs')">
           📁 IPFS 永存
         </button>
+        <button class="web3-tab" data-tab="onchainos" onclick="DegenPanels.switchTab('onchainos')">
+          🌌 Onchain OS
+        </button>
         <button class="web3-tab" data-tab="rugpull" onclick="DegenPanels.switchTab('rugpull')">
           🚨 Rug Pull
         </button>
@@ -120,6 +123,15 @@ const DegenPanels = (() => {
           </div>
           <div class="web3-section-title" style="margin-top:20px">📜 链上公告 (Immutable Announcements)</div>
           <div class="ipfs-announcements-list" id="ipfs-list"></div>
+        </div>
+
+        <!-- Onchain OS Panel -->
+        <div class="web3-panel" id="panel-onchainos">
+          <div id="onchainos-dashboard-container">
+            <div style="text-align:center; padding:40px; color:var(--degen-text-dim);">
+              ⏳ 正在同步 OKX OnchainOS 数据...
+            </div>
+          </div>
         </div>
 
         <!-- Rug Pull Panel -->
@@ -195,6 +207,36 @@ const DegenPanels = (() => {
       </div>
     `;
     document.body.appendChild(modal);
+
+    // Add Send Transaction Modal
+    const sendModal = document.createElement('div');
+    sendModal.className = 'web3-modal-overlay';
+    sendModal.id = 'send-modal';
+    sendModal.innerHTML = `
+      <div class="web3-modal">
+        <h3>💸 转账资产</h3>
+        <div class="web3-input-group">
+          <label>币种</label>
+          <input type="text" id="send-symbol" disabled style="background:rgba(0,0,0,0.2);color:var(--degen-text-dim);">
+        </div>
+        <div class="web3-input-group">
+          <label>接收方地址 (0x...)</label>
+          <input type="text" id="send-to-input" placeholder="0x...">
+        </div>
+        <div class="web3-input-group">
+          <label>数量</label>
+          <input type="number" id="send-amount-input" placeholder="0.0" min="0" step="any">
+          <div style="font-size:10px;color:var(--degen-text-dim);text-align:right;margin-top:4px;">
+            余额: <span id="send-max-balance">0</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="bounty-action-btn" style="border-color:var(--degen-text-dim);color:var(--degen-text-dim)" onclick="DegenPanels.hideSendModal()">取消</button>
+          <button class="create-bounty-btn" onclick="DegenPanels.handleSendTransaction()">💸 确认转账</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(sendModal);
 
     // Push down existing content to accommodate wallet bar
     document.body.style.paddingTop = '50px';
@@ -286,6 +328,7 @@ const DegenPanels = (() => {
     else if (tabName === 'bounty') loadBountyPanel();
     else if (tabName === 'token') loadTokenPanel();
     else if (tabName === 'ipfs') loadIPFSPanel();
+    else if (tabName === 'onchainos') loadOnchainOSPanel();
     else if (tabName === 'rugpull') loadRugPullPanel();
   }
 
@@ -684,6 +727,169 @@ const DegenPanels = (() => {
   }
 
   // ═══════════════════════════════════════════════════
+  // Onchain OS Panel
+  // ═══════════════════════════════════════════════════
+  async function loadOnchainOSPanel() {
+    const container = document.getElementById('onchainos-dashboard-container');
+    try {
+      const portfolio = await DegenWeb3.getOnchainPortfolio();
+      const trends = await DegenWeb3.getMarketTrends();
+      const history = await DegenWeb3.getTransactionHistory();
+
+      let html = `
+        <div class="onchain-dashboard">
+          <div class="portfolio-header">
+            <div>
+              <div class="portfolio-label">总资产净值 (Total Net Worth)</div>
+              <div class="portfolio-value">$${Number(portfolio.totalValueUsd).toLocaleString()}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="portfolio-label">24h 盈亏</div>
+              <div class="portfolio-change">${portfolio.change24h}</div>
+            </div>
+          </div>
+
+          <div class="onchain-section">
+            <div class="web3-section-title">📊 资产明细 (Holdings)</div>
+            <table class="onchain-table">
+              <thead>
+                <tr>
+                  <th>代币</th>
+                  <th>余额</th>
+                  <th>价值 (USD)</th>
+                  <th style="text-align:right">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${portfolio.tokens.map(t => `
+                  <tr>
+                    <td>
+                      <div class="token-row">
+                        <img src="${t.icon}" class="token-icon">
+                        <span>${t.symbol}</span>
+                      </div>
+                    </td>
+                    <td>${t.balance}</td>
+                    <td>$${Number(t.valueUsd).toLocaleString()}</td>
+                    <td style="text-align:right">
+                        <button class="btn-transfer" onclick="DegenPanels.showSendModal('${t.symbol}', '${t.balance}')">
+                            💸 转账
+                        </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="onchain-section">
+            <div class="web3-section-title">🔥 市场热度 (Market Trends)</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              ${trends.hot.map(t => `
+                <div class="market-trend-item">
+                  <div class="trend-rank">#${t.rank}</div>
+                  <div class="trend-info">
+                    <div class="trend-symbol">${t.symbol}</div>
+                  </div>
+                  <div class="trend-stats">
+                    <div class="trend-price">${t.price}</div>
+                    <div class="trend-change ${t.change.startsWith('+') ? 'positive' : 'negative'}">${t.change}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="onchain-section" style="grid-column: 1 / -1; margin-top:20px;">
+            <div class="web3-section-title">📜 最近活动 (On-chain Activity)</div>
+            <table class="onchain-table">
+              <thead>
+                <tr>
+                  <th>类型</th>
+                  <th>资产</th>
+                  <th>数量</th>
+                  <th>对方/合约</th>
+                  <th>时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${history.map(h => `
+                  <tr>
+                    <td>${h.type}</td>
+                    <td>${h.asset}</td>
+                    <td>${h.amount}</td>
+                    <td style="color:var(--degen-cyan)">${h.from || h.to}</td>
+                    <td style="color:var(--degen-text-dim)">${h.time}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      container.innerHTML = html;
+    } catch (err) {
+      container.innerHTML = `<div style="color:var(--degen-red); padding:20px;">❌ 加载失败: ${err.message}</div>`;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // Send Transaction Logic
+  // ═══════════════════════════════════════════════════
+  function showSendModal(symbol, balance) {
+    document.getElementById('send-symbol').value = symbol;
+    document.getElementById('send-max-balance').textContent = balance;
+    document.getElementById('send-to-input').value = '';
+    document.getElementById('send-amount-input').value = '';
+    document.getElementById('send-modal').classList.add('active');
+  }
+
+  function hideSendModal() {
+    document.getElementById('send-modal').classList.remove('active');
+  }
+
+  async function handleSendTransaction() {
+    const symbol = document.getElementById('send-symbol').value;
+    const to = document.getElementById('send-to-input').value.trim();
+    const amount = document.getElementById('send-amount-input').value;
+
+    if (!to || !amount || Number(amount) <= 0) {
+        showToast('❌ 请填写有效的地址和金额', 'error');
+        return;
+    }
+    
+    // Basic address validation (mock)
+    if (!to.startsWith('0x') || to.length < 10) {
+         showToast('❌ 无效的接收方地址', 'error');
+         return;
+    }
+
+    const btn = document.querySelector('#send-modal .create-bounty-btn');
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ 发送中...';
+    btn.disabled = true;
+
+    try {
+        const result = await DegenWeb3.sendTransaction(to, amount, symbol);
+        // If it's a real tx, we wait. If mock, it returns immediately usually, but let's simulate wait if needed.
+        if (result && result.wait) await result.wait();
+
+        hideSendModal();
+        showToast(`✅ 转账成功！TX: ${result.hash.slice(0, 10)}...`, 'success');
+        
+        // Refresh panels
+        loadOnchainOSPanel();
+        if (symbol === 'XDOGE') loadTokenPanel(); 
+        
+    } catch (err) {
+        showToast(`❌ 转账失败: ${err.message}`, 'error');
+    } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
   // Toast Notifications
   // ═══════════════════════════════════════════════════
   function showToast(message, type = 'info') {
@@ -749,6 +955,9 @@ const DegenPanels = (() => {
     handleFaucet,
     handleIPFSUpload,
     handleRugPull,
+    showSendModal,
+    hideSendModal,
+    handleSendTransaction,
     showToast
   };
 })();

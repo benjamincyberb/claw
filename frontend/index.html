@@ -47,11 +47,19 @@
 
         #bottom-panels {
             display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
             gap: 20px;
             width: 1280px;
             max-width: none;
             justify-content: flex-start;
             margin-top: 20px;
+        }
+
+        #bottom-panels > #web3-nav-tabs,
+        #bottom-panels > #web3-panels-container {
+            flex: 0 0 100%;
+            width: 100%;
         }
 
         #game-container {
@@ -180,6 +188,7 @@
             flex-direction: column;
             gap: 10px;
             overflow: hidden;
+            flex: 0 0 auto;
         }
 
         #control-bar::before {
@@ -1017,6 +1026,7 @@
             flex-direction: column;
             gap: 10px;
             overflow: hidden;
+            flex: 0 0 auto;
         }
 
         #guest-agent-panel::before {
@@ -1162,6 +1172,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            flex: 0 0 auto;
         }
 
         #memo-panel::before {
@@ -1493,6 +1504,13 @@
     </style>
     <!-- Degen-Office Web3 Styles -->
     <link rel="stylesheet" href="/static/web3-panels.css">
+    <script src="/static/vendor/phaser-3.80.1.min.js"></script>
+    <script>
+        // Fallback if /static/ fails (e.g. running via simple http.server)
+        if (typeof Phaser === 'undefined') {
+            document.write('<script src="./vendor/phaser-3.80.1.min.js"><\/script>');
+        }
+    </script>
 </head>
 
 <body>
@@ -1678,7 +1696,6 @@
             style="padding:8px 10px; font-family:ArkPixel,monospace; font-size:13px; cursor:pointer; border:2px solid #333; border-radius:5px; background:#333; color:#fff;">CN</button>
     </div>
 
-    <script src="/static/vendor/phaser-3.80.1.min.js?v={{VERSION_TIMESTAMP}}"></script>
     <script>
         // 简易中英文切换
         let uiLang = localStorage.getItem('uiLang') || 'en';
@@ -1913,29 +1930,6 @@
             });
         }
 
-        const IS_TOUCH_DEVICE = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.matchMedia('(pointer: coarse)').matches;
-
-        const config = {
-            type: Phaser.AUTO,
-            width: 1280,
-            height: 720,
-            parent: 'game-container',
-            pixelArt: true,
-            // 桌面端保持 FIT；手机端用 RESIZE，并在相机里按高度做 fit（可横向 pan）
-            scale: {
-                mode: IS_TOUCH_DEVICE ? Phaser.Scale.RESIZE : Phaser.Scale.FIT,
-                autoCenter: Phaser.Scale.CENTER_BOTH,
-                width: 1280,
-                height: 720
-            },
-            physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
-            scene: { preload: preload, create: create, update: update }
-        };
-
-        let totalAssets = 0;
-        let loadedAssets = 0;
-        let loadingProgressBar, loadingProgressContainer, loadingOverlay, loadingText;
-
         // Memo 相关函数
         async function loadMemo() {
             const memoDate = document.getElementById('memo-date');
@@ -2041,7 +2035,7 @@
             }
         };
 
-        let game, star, sofa, serverroom, officeBgSprite, areas = {}, currentState = 'idle', pendingDesiredState = null, statusText, lastFetch = 0, lastBlink = 0, lastBubble = 0, targetX = 660, targetY = 170, bubble = null, typewriterText = '', typewriterTarget = '', typewriterIndex = 0, lastTypewriter = 0, syncAnimSprite = null, syncAnimPlayable = false, catBubble = null, selectionBoxGraphics = null;
+        var config, IS_TOUCH_DEVICE = false, S_TOUCH_DEVICE = false, game, star, sofa, serverroom, officeBgSprite, areas = {}, currentState = 'idle', pendingDesiredState = null, statusText, lastFetch = 0, lastBlink = 0, lastBubble = 0, targetX = 660, targetY = 170, bubble = null, typewriterText = '', typewriterTarget = '', typewriterIndex = 0, lastTypewriter = 0, syncAnimSprite = null, syncAnimPlayable = false, catBubble = null, selectionBoxGraphics = null, totalAssets = 0, loadedAssets = 0, loadingProgressBar, loadingProgressContainer, loadingOverlay, loadingText;
         const IDLE_SOFA_ANCHOR = { x: 798, y: 272 }; // 统一中心锚点（原 sofa 左上 670,144 的中心）
         const IDLE_STAR_SCALE = 1.0; // star idle 改为256帧原生显示，不再放大
         // flowers 精灵表规格：固定单帧 128x128，4x4
@@ -4308,7 +4302,23 @@
             updateSpeedModeUI();
 
 
-            // 直接启动 Phaser，避免首屏被额外接口阻塞
+            IS_TOUCH_DEVICE = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.matchMedia('(pointer: coarse)').matches;
+            S_TOUCH_DEVICE = IS_TOUCH_DEVICE;
+            config = {
+                type: Phaser.AUTO,
+                width: 1280,
+                height: 720,
+                parent: 'game-container',
+                pixelArt: true,
+                scale: {
+                    mode: IS_TOUCH_DEVICE ? Phaser.Scale.RESIZE : Phaser.Scale.FIT,
+                    autoCenter: Phaser.Scale.CENTER_BOTH,
+                    width: 1280,
+                    height: 720
+                },
+                physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
+                scene: { preload: preload, create: create, update: update }
+            };
 
             new Phaser.Game(config);
 

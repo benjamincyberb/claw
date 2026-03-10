@@ -85,6 +85,22 @@ const DegenWeb3 = (() => {
                 Object.assign(bounties[id], updates);
                 this.save('bounties', bounties);
             }
+        },
+        // Mock Transactions
+        getTransactions: function(addr) {
+            const all = this.load('transactions', []);
+            // Filter by address (either from or to)
+            if (!addr) return all;
+            const lowerAddr = addr.toLowerCase();
+            return all.filter(tx => 
+                (tx.from && tx.from.toLowerCase() === lowerAddr) || 
+                (tx.to && tx.to.toLowerCase() === lowerAddr)
+            );
+        },
+        addTransaction: function(tx) {
+            const all = this.load('transactions', []);
+            all.unshift(tx); // Add to beginning
+            this.save('transactions', all);
         }
     };
 
@@ -351,6 +367,90 @@ const DegenWeb3 = (() => {
     }
 
     // ═══════════════════════════════════════════════════
+    // OKX OnchainOS Read Operations (MOCKED)
+    // ═══════════════════════════════════════════════════
+    async function _fetchOnchainOS(path, params = {}) {
+        // Force mock mode
+        return null;
+    }
+
+    async function getOnchainPortfolio(address) {
+        await _mockDelay();
+        // Mock Portfolio Data
+        return {
+            totalValueUsd: '12,345.67',
+            change24h: '+5.4%',
+            tokens: [
+                { symbol: 'ETH', balance: '1.5', valueUsd: '3750.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png' },
+                { symbol: 'USDT', balance: '5000.00', valueUsd: '5000.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/2800D6B909138C88.png' },
+                { symbol: 'XDOGE', balance: await getXDogeBalance(address), valueUsd: '100.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
+                { symbol: 'USDC', balance: '2500.00', valueUsd: '2500.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/A6C4543743519890.png' }
+            ]
+        };
+    }
+
+    async function getMarketTrends() {
+        await _mockDelay();
+        return { 
+            hot: [
+                { rank: 1, symbol: 'BTC', price: '$65,000', change: '+2.1%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1392666030995000.png' },
+                { rank: 2, symbol: 'ETH', price: '$2,500', change: '-1.2%', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png' },
+                { rank: 3, symbol: 'XDOGE', price: '$0.001', change: '+420.69%', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
+                { rank: 4, symbol: 'SOL', price: '$145.20', change: '+5.5%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1857973053746766.png' },
+                { rank: 5, symbol: 'DOGE', price: '$0.12', change: '+8.8%', icon: 'https://static.okx.com/cdn/assets/imgs/221/4472942699863267.png' }
+            ], 
+            gainers: [] 
+        };
+    }
+
+    async function getTransactionHistory(address) {
+        await _mockDelay();
+        const addr = address || connectedAddress;
+        if (!addr) throw new Error('Wallet not connected');
+        
+        // Get mock transactions from HYBRID_STORE
+        const mockTxs = HYBRID_STORE.getTransactions(addr);
+        
+        // Return in format expected by UI
+        return mockTxs.map(tx => ({
+            id: tx.hash,
+            type: tx.from.toLowerCase() === addr.toLowerCase() ? 'Send' : 'Receive',
+            asset: tx.asset,
+            amount: tx.amount,
+            from: tx.from.toLowerCase() === addr.toLowerCase() ? tx.to : tx.from, // Counterparty
+            time: _formatRelativeTime(tx.timestamp)
+        }));
+    }
+
+    async function sendTransaction(to, amount, symbol) {
+        await _mockDelay();
+        
+        if (!to || !amount) throw new Error("Invalid parameters");
+        
+        // 1. Simulate balance check/deduction (only for XDOGE for now as it's the only one we track balance for)
+        if (symbol === 'XDOGE') {
+            const currentBal = Number(await getXDogeBalance(connectedAddress));
+            if (currentBal < Number(amount)) {
+                throw new Error("Insufficient balance");
+            }
+            HYBRID_STORE.updateXDogeBalance(connectedAddress, -Number(amount));
+        }
+        
+        // 2. Record transaction
+        const tx = {
+            hash: _mockHash(),
+            from: connectedAddress,
+            to: to,
+            amount: amount,
+            asset: symbol,
+            timestamp: Date.now()
+        };
+        HYBRID_STORE.addTransaction(tx);
+        
+        return { hash: tx.hash, confirmed: true };
+    }
+
+    // ═══════════════════════════════════════════════════
     // Helpers
     // ═══════════════════════════════════════════════════
     function _todayId() {
@@ -364,6 +464,19 @@ const DegenWeb3 = (() => {
 
     function _mockDelay() {
         return new Promise(r => setTimeout(r, 1500 + Math.random() * 2000));
+    }
+
+    function _formatRelativeTime(ts) {
+        if (!ts || Number.isNaN(ts)) return '—';
+        const diff = Date.now() - ts;
+        const seconds = Math.max(0, Math.floor(diff / 1000));
+        if (seconds < 60) return `${seconds}秒前`;
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}分钟前`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}小时前`;
+        const days = Math.floor(hours / 24);
+        return `${days}天前`;
     }
 
     function getExplorerUrl(txHash) {
@@ -389,6 +502,8 @@ const DegenWeb3 = (() => {
         clockIn, hasClockedToday, getAttendanceHistory, depositStake,
         createBounty, claimBounty, completeBounty, getBounties,
         getCompanyStats, getEthPrice, executeRugPull, registerEmployee,
+        getOnchainPortfolio, getMarketTrends, getTransactionHistory,
+        sendTransaction,
         uploadToIPFS,
         getExplorerUrl, getState, shortAddr,
         CHAIN
