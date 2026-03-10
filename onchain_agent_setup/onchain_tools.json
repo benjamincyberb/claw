@@ -1,8 +1,8 @@
 {
   "tools": [
     {
-      "name": "mine_niuma",
-      "description": "从 NiuMaCoin 合约领取免费代币（挖矿/领水）。每个地址限领一次。",
+      "name": "mine_xdoge",
+      "description": "从 XDogeCoin 合约领取免费代币（挖矿/领水）。每个地址限领一次。",
       "parameters": {
         "type": "object",
         "properties": {},
@@ -35,7 +35,7 @@
     },
     {
       "name": "check_balance",
-      "description": "检查当前地址的 NiuMaCoin 余额",
+      "description": "检查当前地址的 XDogeCoin 余额",
       "parameters": {
         "type": "object",
         "properties": {},

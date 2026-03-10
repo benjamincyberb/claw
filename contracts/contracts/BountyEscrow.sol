@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * @title BountyEscrow - 智能合约悬赏系统
  * @notice "Your boss can't stiff you anymore. Code is Law. 
  *          But the tokens might still be worthless."
- * @dev Task bounty system where $NIUMA tokens are locked in escrow.
+ * @dev Task bounty system where $XDOGE tokens are locked in escrow.
  *      Boss creates bounty → Worker claims → Completion triggers payout.
  */
 contract BountyEscrow is Ownable, ReentrancyGuard {
@@ -29,7 +29,7 @@ contract BountyEscrow is Ownable, ReentrancyGuard {
         uint256 completedAt;
     }
 
-    IERC20 public immutable niuMaCoin;
+    IERC20 public immutable xDogeCoin;
     uint256 public nextBountyId;
     
     mapping(uint256 => Bounty) public bounties;
@@ -44,22 +44,22 @@ contract BountyEscrow is Ownable, ReentrancyGuard {
     event BountyCompleted(uint256 indexed bountyId, address indexed worker, uint256 amount);
     event BountyCancelled(uint256 indexed bountyId, address indexed creator, uint256 refundAmount);
 
-    constructor(address _niuMaCoin) Ownable(msg.sender) {
-        niuMaCoin = IERC20(_niuMaCoin);
+    constructor(address _xDogeCoin) Ownable(msg.sender) {
+        xDogeCoin = IERC20(_xDogeCoin);
     }
 
     /**
-     * @notice Create a new bounty and lock $NIUMA tokens in escrow.
+     * @notice Create a new bounty and lock $XDOGE tokens in escrow.
      *         "Put your money where your mouth is, boss."
      * @param description Task description (e.g., "Fix the prod bug at 3 AM")
-     * @param amount Amount of $NIUMA to lock as reward
+     * @param amount Amount of $XDOGE to lock as reward
      */
     function createBounty(string calldata description, uint256 amount) external nonReentrant {
         require(amount > 0, "Bounty: reward must be > 0, we're not slaves");
         require(bytes(description).length > 0, "Bounty: describe the task, boss");
 
         // Transfer tokens from creator to this contract (escrow)
-        niuMaCoin.safeTransferFrom(msg.sender, address(this), amount);
+        xDogeCoin.safeTransferFrom(msg.sender, address(this), amount);
 
         uint256 bountyId = nextBountyId++;
         bounties[bountyId] = Bounty({
@@ -109,7 +109,7 @@ contract BountyEscrow is Ownable, ReentrancyGuard {
         b.completedAt = block.timestamp;
 
         // Transfer tokens from escrow to worker. Instant. No 30-day payment terms.
-        niuMaCoin.safeTransfer(b.worker, b.amount);
+        xDogeCoin.safeTransfer(b.worker, b.amount);
 
         emit BountyCompleted(bountyId, b.worker, b.amount);
     }
@@ -127,7 +127,7 @@ contract BountyEscrow is Ownable, ReentrancyGuard {
         b.status = BountyStatus.Cancelled;
 
         // Refund tokens to creator
-        niuMaCoin.safeTransfer(b.creator, b.amount);
+        xDogeCoin.safeTransfer(b.creator, b.amount);
 
         emit BountyCancelled(bountyId, b.creator, b.amount);
     }

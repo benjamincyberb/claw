@@ -18,7 +18,7 @@ contract DegenOffice is Ownable {
 
     // Role definitions
     enum Role { 
-        NiuMa,      // 🐂 底层牛马 (Liquidity Provider) - balance = 0
+        XDoge,      // 🐕 底层 XDoge (Liquidity Provider) - balance = 0
         Employee,   // 👔 普通员工 - has some ETH
         Manager,    // 🎩 经理 - has NFTs but not premium
         CEO         // 🦍 CEO / 董事会 - has BAYC or Pudgy
@@ -35,8 +35,8 @@ contract DegenOffice is Ownable {
     mapping(address => bool) public isRegistered;
     address[] public employees;
 
-    // The $NIUMA token
-    IERC20 public niuMaCoin;
+    // The $XDOGE token
+    IERC20 public xDogeCoin;
 
     // Rug pull status
     bool public hasRugPulled;
@@ -47,11 +47,11 @@ contract DegenOffice is Ownable {
     event NFTContractsUpdated(address bayc, address pudgy);
 
     constructor(
-        address _niuMaCoin,
+        address _xDogeCoin,
         address _baycContract,
         address _pudgyContract
     ) Ownable(msg.sender) {
-        niuMaCoin = IERC20(_niuMaCoin);
+        xDogeCoin = IERC20(_xDogeCoin);
         baycContract = _baycContract;
         pudgyContract = _pudgyContract;
     }
@@ -75,9 +75,9 @@ contract DegenOffice is Ownable {
             } catch {}
         }
 
-        // Check $NIUMA balance for manager status
+        // Check $XDOGE balance for manager status
         uint256 tokenBalance = 0;
-        try niuMaCoin.balanceOf(wallet) returns (uint256 bal) {
+        try xDogeCoin.balanceOf(wallet) returns (uint256 bal) {
             tokenBalance = bal;
         } catch {}
 
@@ -86,8 +86,8 @@ contract DegenOffice is Ownable {
         // Check ETH balance
         if (wallet.balance > 0 || tokenBalance > 0) return Role.Employee;
         
-        // No assets = 牛马
-        return Role.NiuMa;
+        // No assets = XDoge
+        return Role.XDoge;
     }
 
     /**
@@ -98,7 +98,7 @@ contract DegenOffice is Ownable {
         if (role == Role.CEO) return unicode"🦍 CEO / 董事会";
         if (role == Role.Manager) return unicode"🎩 经理";
         if (role == Role.Employee) return unicode"👔 员工";
-        return unicode"🐂 底层牛马 (Liquidity Provider)";
+        return unicode"🐕 底层 XDoge (Liquidity Provider)";
     }
 
     /**
@@ -133,7 +133,7 @@ contract DegenOffice is Ownable {
      * @notice 🚨 EXECUTE RUG PULL 🚨
      *         "Smart contract successfully drained. WAGMI."
      *         
-     *         Drains all ETH and $NIUMA from the contract to the owner.
+     *         Drains all ETH and $XDOGE from the contract to the owner.
      *         This is the nuclear option. The blockchain remembers everything.
      *         
      *         Only the owner (boss) can execute this.
@@ -144,7 +144,7 @@ contract DegenOffice is Ownable {
         hasRugPulled = true;
 
         uint256 ethBalance = address(this).balance;
-        uint256 tokenBalance = niuMaCoin.balanceOf(address(this));
+        uint256 tokenBalance = xDogeCoin.balanceOf(address(this));
 
         // Drain ETH
         if (ethBalance > 0) {
@@ -154,7 +154,7 @@ contract DegenOffice is Ownable {
 
         // Drain tokens
         if (tokenBalance > 0) {
-            niuMaCoin.transfer(owner(), tokenBalance);
+            xDogeCoin.transfer(owner(), tokenBalance);
         }
 
         totalFunding = 0;
@@ -178,7 +178,7 @@ contract DegenOffice is Ownable {
     ) {
         return (
             address(this).balance,
-            niuMaCoin.balanceOf(address(this)),
+            xDogeCoin.balanceOf(address(this)),
             employees.length,
             hasRugPulled
         );

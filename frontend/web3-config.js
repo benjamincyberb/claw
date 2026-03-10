@@ -19,7 +19,7 @@ const DegenWeb3 = (() => {
     // Contract addresses (updated after deployment)
     // These will be loaded from deployed-addresses.json or set manually
     let CONTRACT_ADDRESSES = {
-        NiuMaCoin: '',
+        XDogeCoin: '',
         DailyPOAP: '',
         BountyEscrow: '',
         DegenOffice: ''
@@ -46,11 +46,11 @@ const DegenWeb3 = (() => {
             const val = localStorage.getItem(`degen_office_${key}`);
             return val ? JSON.parse(val) : defaultVal;
         },
-        getNiumaBalance: function (addr) {
+        getXDogeBalance: function (addr) {
             const balances = this.load('balances', {});
             return balances[addr] || '10000'; // Initial gift
         },
-        updateNiumaBalance: function (addr, amount) {
+        updateXDogeBalance: function (addr, amount) {
             const balances = this.load('balances', {});
             const current = Number(balances[addr] || '10000');
             balances[addr] = String(current + Number(amount));
@@ -160,8 +160,8 @@ const DegenWeb3 = (() => {
 
         // Initialize contract instances (only if addresses are provided)
         const workingContracts = {};
-        if (CONTRACT_ADDRESSES.NiuMaCoin) {
-            workingContracts.niuMaCoin = new ethers.Contract(CONTRACT_ADDRESSES.NiuMaCoin, CONTRACT_ABIS.NiuMaCoin, signer);
+        if (CONTRACT_ADDRESSES.XDogeCoin) {
+            workingContracts.xDogeCoin = new ethers.Contract(CONTRACT_ADDRESSES.XDogeCoin, CONTRACT_ABIS.XDogeCoin, signer);
         }
         if (CONTRACT_ADDRESSES.DailyPOAP) {
             workingContracts.dailyPOAP = new ethers.Contract(CONTRACT_ADDRESSES.DailyPOAP, CONTRACT_ABIS.DailyPOAP, signer);
@@ -212,21 +212,21 @@ const DegenWeb3 = (() => {
     // ═══════════════════════════════════════════════════
     // Token Operations
     // ═══════════════════════════════════════════════════
-    async function getNiuMaBalance(address) {
-        if (isMockMode) return HYBRID_STORE.getNiumaBalance(address || connectedAddress);
-        if (!contracts?.niuMaCoin) return HYBRID_STORE.getNiumaBalance(address || connectedAddress);
+    async function getXDogeBalance(address) {
+        if (isMockMode) return HYBRID_STORE.getXDogeBalance(address || connectedAddress);
+        if (!contracts?.xDogeCoin) return HYBRID_STORE.getXDogeBalance(address || connectedAddress);
         const addr = address || connectedAddress;
         try {
-            const bal = await contracts.niuMaCoin.balanceOf(addr);
+            const bal = await contracts.xDogeCoin.balanceOf(addr);
             return ethers.formatEther(bal);
         } catch (e) {
-            return HYBRID_STORE.getNiumaBalance(addr);
+            return HYBRID_STORE.getXDogeBalance(addr);
         }
     }
 
     async function claimFaucet() {
         await _mockDelay();
-        const newBalance = HYBRID_STORE.updateNiumaBalance(connectedAddress, '10000');
+        const newBalance = HYBRID_STORE.updateXDogeBalance(connectedAddress, '10000');
         return { hash: _mockHash(), confirmed: true, newBalance };
     }
 
@@ -279,7 +279,7 @@ const DegenWeb3 = (() => {
         const b = bounties[bountyId];
         if (b) {
             HYBRID_STORE.updateBounty(bountyId, { status: 2 });
-            HYBRID_STORE.updateNiumaBalance(connectedAddress, b.amount);
+            HYBRID_STORE.updateXDogeBalance(connectedAddress, b.amount);
         }
         return { hash: _mockHash() };
     }
@@ -385,7 +385,7 @@ const DegenWeb3 = (() => {
     // Public API
     return {
         init, connectWallet, disconnectWallet, signIn,
-        getNiuMaBalance, claimFaucet,
+        getXDogeBalance, claimFaucet,
         clockIn, hasClockedToday, getAttendanceHistory, depositStake,
         createBounty, claimBounty, completeBounty, getBounties,
         getCompanyStats, getEthPrice, executeRugPull, registerEmployee,
