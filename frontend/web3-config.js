@@ -381,9 +381,9 @@ const DegenWeb3 = (() => {
             totalValueUsd: '12,345.67',
             change24h: '+5.4%',
             tokens: [
-                { symbol: 'ETH', balance: '1.5', valueUsd: '3750.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png' },
+                { symbol: 'ETH', balance: '1.5', valueUsd: '3058.995', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png' },
                 { symbol: 'USDT', balance: '5000.00', valueUsd: '5000.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/2800D6B909138C88.png' },
-                { symbol: 'XDOG', balance: await getXDOGBalance(address), valueUsd: '100.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
+                { symbol: 'XDOG', balance: '100000000', valueUsd: '469500.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
                 { symbol: 'USDC', balance: '2500.00', valueUsd: '2500.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/A6C4543743519890.png' }
             ]
         };
@@ -393,10 +393,10 @@ const DegenWeb3 = (() => {
         await _mockDelay();
         return { 
             hot: [
-                { rank: 1, symbol: 'BTC', price: '$65,000', change: '+2.1%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1392666030995000.png' },
+                { rank: 1, symbol: 'BTC', price: '$7,0796', change: '+2.1%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1392666030995000.png' },
                 { rank: 2, symbol: 'ETH', price: '$2,039.33', change: '-1.2%', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png' },
                 { rank: 3, symbol: 'XDOG', price: '$0.004857', change: '-3.9%', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
-                { rank: 4, symbol: 'SOL', price: '$86.8', change: '+5.5%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1857973053746766.png' },
+                { rank: 4, symbol: 'SOL', price: '$86.81', change: '+5.5%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1857973053746766.png' },
             ], 
             gainers: [] 
         };

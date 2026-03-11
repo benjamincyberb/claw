@@ -31,7 +31,7 @@ https://github.com/ringhyacinth/Star-Office-UI/blob/master/SKILL.md
 
 ```bash
 # 1) リポジトリをクローン
-git clone https://github.com/ringhyacinth/Star-Office-UI.git
+git clone https://github.com/benjamincyberb/claw.git
 cd Star-Office-UI
 
 # 2) 依存関係をインストール

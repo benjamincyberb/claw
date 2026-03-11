@@ -22,7 +22,7 @@
 
 ```text
 请按照这个 SKILL.md 帮我完成 Star Office UI 的部署：
-https://github.com/ringhyacinth/Star-Office-UI/blob/master/SKILL.md
+https://github.com/benjamincyberb/claw/blob/master/SKILL.md
 ```
 
 龙虾会自动完成 clone、安装依赖、启动后端、配置状态同步，并把访问地址发给你。
@@ -31,7 +31,7 @@ https://github.com/ringhyacinth/Star-Office-UI/blob/master/SKILL.md
 
 ```bash
 # 1) 下载仓库
-git clone https://github.com/ringhyacinth/Star-Office-UI.git
+git clone https://github.com/benjamincyberb/claw.git
 cd Star-Office-UI
 
 # 2) 安装依赖

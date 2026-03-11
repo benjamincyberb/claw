@@ -24,7 +24,7 @@ description: Star Office UI 一键化 Skill：帮主人快速部署像素办公�
 
 ```bash
 # 1) 下载仓库
-git clone https://github.com/ringhyacinth/Star-Office-UI.git
+git clone https://github.com/benjamincyberb/claw.git
 cd Star-Office-UI
 
 # 2) 安装依赖

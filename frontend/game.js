@@ -305,9 +305,9 @@ function preload() {
   this.load.spritesheet('sofa_busy', '/static/sofa-busy-spritesheet' + getExt('sofa-busy-spritesheet.png'), { frameWidth: 256, frameHeight: 256 });
 
 
-  this.load.spritesheet('posters', '/static/posters-spritesheet' + getExt('posters-spritesheet.png'), { frameWidth: 160, frameHeight: 160 });
+  // this.load.spritesheet('posters', '/static/posters-spritesheet' + getExt('posters-spritesheet.png'), { frameWidth: 160, frameHeight: 160 });
   this.load.spritesheet('coffee_machine', '/static/coffee-machine-spritesheet' + getExt('coffee-machine-spritesheet.png'), { frameWidth: 230, frameHeight: 230 });
-  this.load.spritesheet('serverroom', '/static/serverroom-spritesheet' + getExt('serverroom-spritesheet.png'), { frameWidth: 180, frameHeight: 251 });
+  // this.load.spritesheet('serverroom', '/static/serverroom-spritesheet' + getExt('serverroom-spritesheet.png'), { frameWidth: 180, frameHeight: 251 });
 
   this.load.spritesheet('error_bug', '/static/error-bug-spritesheet-grid' + (supportsWebP ? '.webp' : '.png'), { frameWidth: 180, frameHeight: 180 });
   this.load.spritesheet('cats', '/static/cats-spritesheet' + (supportsWebP ? '.webp' : '.png'), { frameWidth: 160, frameHeight: 160 });
@@ -400,17 +400,17 @@ function create() {
   // }
 
   // === 海报（来自 LAYOUT）===
-  const postersFrameCount = 32;
-  const randomPosterFrame = Math.floor(Math.random() * postersFrameCount);
-  const poster = game.add.sprite(LAYOUT.furniture.poster.x, LAYOUT.furniture.poster.y, 'posters', randomPosterFrame).setOrigin(0.5);
-  poster.setDepth(LAYOUT.furniture.poster.depth);
-  poster.setInteractive({ useHandCursor: true });
-  window.posterSprite = poster;
-  window.posterFrameCount = postersFrameCount;
-  poster.on('pointerdown', () => {
-    const next = Math.floor(Math.random() * window.posterFrameCount);
-    window.posterSprite.setFrame(next);
-  });
+  // const postersFrameCount = 32;
+  // const randomPosterFrame = Math.floor(Math.random() * postersFrameCount);
+  // const poster = game.add.sprite(LAYOUT.furniture.poster.x, LAYOUT.furniture.poster.y, 'posters', randomPosterFrame).setOrigin(0.5);
+  // poster.setDepth(LAYOUT.furniture.poster.depth);
+  // poster.setInteractive({ useHandCursor: true });
+  // window.posterSprite = poster;
+  // window.posterFrameCount = postersFrameCount;
+  // poster.on('pointerdown', () => {
+  //   const next = Math.floor(Math.random() * window.posterFrameCount);
+  //   window.posterSprite.setFrame(next);
+  // });
 
   // === 小猫（来自 LAYOUT）===
   const catsFrameCount = 16;
@@ -441,21 +441,21 @@ function create() {
   // coffeeMachine.anims.play('coffee_machine', true);
 
   // === 服务器区（来自 LAYOUT）===
-  this.anims.create({
-    key: 'serverroom_on',
-    frames: this.anims.generateFrameNumbers('serverroom', { start: 0, end: 39 }),
-    frameRate: 6,
-    repeat: -1
-  });
-  serverroom = this.add.sprite(
-    LAYOUT.furniture.serverroom.x,
-    LAYOUT.furniture.serverroom.y,
-    'serverroom',
-    0
-  ).setOrigin(LAYOUT.furniture.serverroom.origin.x, LAYOUT.furniture.serverroom.origin.y);
-  serverroom.setDepth(LAYOUT.furniture.serverroom.depth);
-  serverroom.anims.stop();
-  serverroom.setFrame(0);
+  // this.anims.create({
+  //   key: 'serverroom_on',
+  //   frames: this.anims.generateFrameNumbers('serverroom', { start: 0, end: 39 }),
+  //   frameRate: 6,
+  //   repeat: -1
+  // });
+  // serverroom = this.add.sprite(
+  //   LAYOUT.furniture.serverroom.x,
+  //   LAYOUT.furniture.serverroom.y,
+  //   'serverroom',
+  //   0
+  // ).setOrigin(LAYOUT.furniture.serverroom.origin.x, LAYOUT.furniture.serverroom.origin.y);
+  // serverroom.setDepth(LAYOUT.furniture.serverroom.depth);
+  // serverroom.anims.stop();
+  // serverroom.setFrame(0);
 
   // === 新办公桌（来自 LAYOUT，强制透明 PNG）===
   // const desk = this.add.image(
@@ -622,18 +622,18 @@ function update(time) {
   if (time - lastAgentsFetch > AGENTS_FETCH_INTERVAL) { fetchAgents(); lastAgentsFetch = time; }
 
   const effectiveStateForServer = pendingDesiredState || currentState;
-  if (serverroom) {
-    if (effectiveStateForServer === 'idle') {
-      if (serverroom.anims.isPlaying) {
-        serverroom.anims.stop();
-        serverroom.setFrame(0);
-      }
-    } else {
-      if (!serverroom.anims.isPlaying || serverroom.anims.currentAnim?.key !== 'serverroom_on') {
-        serverroom.anims.play('serverroom_on', true);
-      }
-    }
-  }
+  // if (serverroom) {
+  //   if (effectiveStateForServer === 'idle') {
+  //     if (serverroom.anims.isPlaying) {
+  //       serverroom.anims.stop();
+  //       serverroom.setFrame(0);
+  //     }
+  //   } else {
+  //     if (!serverroom.anims.isPlaying || serverroom.anims.currentAnim?.key !== 'serverroom_on') {
+  //       serverroom.anims.play('serverroom_on', true);
+  //     }
+  //   }
+  // }
 
   if (window.errorBug) {
     if (effectiveStateForServer === 'error') {
@@ -756,14 +756,14 @@ function fetchStatus() {
           }
         }
 
-        if (serverroom) {
-          if (nextState === 'idle') {
-            serverroom.anims.stop();
-            serverroom.setFrame(0);
-          } else {
-            serverroom.anims.play('serverroom_on', true);
-          }
-        }
+        // if (serverroom) {
+        //   if (nextState === 'idle') {
+        //     serverroom.anims.stop();
+        //     serverroom.setFrame(0);
+        //   } else {
+        //     serverroom.anims.play('serverroom_on', true);
+        //   }
+        // }
 
         if (syncAnimSprite) {
           if (nextState === 'syncing') {

@@ -31,7 +31,7 @@ Your lobster will automatically clone the repo, install dependencies, start the 
 
 ```bash
 # 1) Clone the repo
-git clone https://github.com/ringhyacinth/Star-Office-UI.git
+git clone https://github.com/benjamincyberb/claw.git
 cd Star-Office-UI
 
 # 2) Install dependencies

@@ -90,7 +90,7 @@ const DegenPanels = (() => {
             </button>
           </div>
           <div class="web3-section-subtitle">
-            老板锁仓 $XDOG → 牛马完成任务 → 智能合约自动打款。老板无法赖账，因为代码即法律。
+            老板锁仓 $XDOG → 打工狗完成任务 → 智能合约自动打款。老板无法赖账，因为代码即法律。
           </div>
           <div class="bounty-list" id="bounty-list"></div>
         </div>
@@ -146,7 +146,7 @@ const DegenPanels = (() => {
               🚨 Execute Rug Pull 🚨
             </button>
             <div class="rug-pull-warning">
-              ⚠️ WARNING: This will drain ALL company funds (ETH + $XDOG) to the boss's wallet.
+              ⚠️ WARNING: This will drain ALL company funds (OKB + $XDOG) to the boss's wallet.
               This action is irreversible and will be permanently recorded on the blockchain.
               <br><br>
               "The blockchain remembers everything. Your employees will too."
@@ -531,8 +531,8 @@ const DegenPanels = (() => {
           <div class="stat-label">当前角色</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">$${Number(state.ethPrice || 0).toLocaleString()}</div>
-          <div class="stat-label">ETH 实时价格 (Real)</div>
+          <div class="stat-value">$${Number(95.18 || 0).toLocaleString()}</div>
+          <div class="stat-label">OKB 实时价格 (Real)</div>
         </div>
       `;
       document.getElementById('token-stats').innerHTML = statsHtml;
@@ -624,7 +624,7 @@ const DegenPanels = (() => {
       const statsHtml = `
         <div class="company-stat">
           <div class="value">${Number(stats.ethBalance).toFixed(4)}</div>
-          <div class="label">公司 ETH 余额</div>
+          <div class="label">公司 OKB 余额</div>
         </div>
         <div class="company-stat">
           <div class="value">${Number(stats.tokenBalance).toLocaleString()}</div>
@@ -632,11 +632,11 @@ const DegenPanels = (() => {
         </div>
         <div class="company-stat">
           <div class="value">${stats.employeeCount}</div>
-          <div class="label">在册牛马数</div>
+          <div class="label">在册打工狗数</div>
         </div>
         <div class="company-stat">
-          <div class="value" style="color:var(--degen-cyan)">$${Number(stats.ethPrice).toLocaleString()}</div>
-          <div class="label">ETH 实时价格 (Real)</div>
+          <div class="value" style="color:var(--degen-cyan)">$${Number(95.18).toLocaleString()}</div>
+          <div class="label">OKB 实时价格 (Real)</div>
         </div>
       `;
       document.getElementById('company-stats').innerHTML = statsHtml;
@@ -741,7 +741,7 @@ const DegenPanels = (() => {
           <div class="portfolio-header">
             <div>
               <div class="portfolio-label">总资产净值 (Total Net Worth)</div>
-              <div class="portfolio-value">$${Number(portfolio.totalValueUsd).toLocaleString()}</div>
+              <div class="portfolio-value">$${Number(10000).toLocaleString()}</div>
             </div>
             <div style="text-align:right">
               <div class="portfolio-label">24h 盈亏</div>

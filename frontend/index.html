@@ -4388,7 +4388,7 @@
             this.load.spritesheet('posters', '/static/posters-spritesheet.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 160, frameHeight: 160 });
             this.load.spritesheet('coffee_machine', '/static/coffee-machine-v3-grid.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 230, frameHeight: 230 });
             this.load.image('coffee_machine_shadow', '/static/coffee-machine-shadow-v1.png?v={{VERSION_TIMESTAMP}}');
-            this.load.spritesheet('serverroom', '/static/serverroom-spritesheet.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 180, frameHeight: 251 });
+            // this.load.spritesheet('serverroom', '/static/serverroom-spritesheet.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 180, frameHeight: 251 });
 
             // Error / bug animation: 180x180, 96 frames (repacked grid)
             this.load.spritesheet('error_bug', '/static/error-bug-spritesheet-grid.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 220, frameHeight: 220 });
@@ -4406,7 +4406,7 @@
             this.load.spritesheet('star_working', '/static/star-working-spritesheet-grid.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 300, frameHeight: 300 });
 
             // Sync state animation (256x256, 多帧): 非同步显示首帧，同步从第2帧循环
-            this.load.spritesheet('sync_anim', '/static/sync-animation-v3-grid.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 256, frameHeight: 256 });
+            // this.load.spritesheet('sync_anim', '/static/sync-animation-v3-grid.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 256, frameHeight: 256 });
 
             // Memo background image
             // memo 底图固定走 png，避免某些端 webp 透明通道异常导致“底图丢失”
@@ -4577,18 +4577,18 @@
             // coffeeMachine.anims.play('coffee_machine', true);
 
             // Server room animation
-            const serverFrameMax = Math.max(0, (this.textures.get('serverroom')?.frameTotal || 1) - 2);
-            this.anims.create({
-                key: 'serverroom_on',
-                frames: this.anims.generateFrameNumbers('serverroom', { start: 0, end: serverFrameMax }),
-                frameRate: 6,
-                repeat: -1
-            });
-            serverroom = this.add.sprite(1021, 142, 'serverroom', 0).setOrigin(0.5);
-            serverroom.setDepth(2);
-            // 默认 idle: 静止第0帧
-            serverroom.anims.stop();
-            serverroom.setFrame(0);
+            // const serverFrameMax = Math.max(0, (this.textures.get('serverroom')?.frameTotal || 1) - 2);
+            // this.anims.create({
+            //     key: 'serverroom_on',
+            //     frames: this.anims.generateFrameNumbers('serverroom', { start: 0, end: serverFrameMax }),
+            //     frameRate: 6,
+            //     repeat: -1
+            // });
+            // serverroom = this.add.sprite(1021, 142, 'serverroom', 0).setOrigin(0.5);
+            // serverroom.setDepth(2);
+            // // 默认 idle: 静止第0帧
+            // serverroom.anims.stop();
+            // serverroom.setFrame(0);
 
             // Desk at (218,417) (v2)
             // const desk = this.add.image(218, 417, 'desk_v2').setOrigin(0.5);
@@ -4641,6 +4641,7 @@
             window.starWorking = starWorking;
 
             // Sync animation sprite at (1157,592)
+            /*
             const syncFrameTotal = Number(this.textures.get('sync_anim')?.frameTotal || 0);
             const syncFrameStart = 1;
             const syncFrameEnd = Math.max(0, syncFrameTotal - 2);
@@ -4657,11 +4658,12 @@
                     repeat: -1
                 });
             }
-            //syncAnimSprite = this.add.sprite(1157, 592, 'sync_anim', 0).setOrigin(0.5);
+            syncAnimSprite = this.add.sprite(1157, 592, 'sync_anim', 0).setOrigin(0.5);
             syncAnimSprite.setDepth(40);
             // default show first frame only
             syncAnimSprite.anims.stop();
             syncAnimSprite.setFrame(0);
+            */
 
             // Debug: expose star sprite too (for path calibration / visuals)
             window.starSprite = star;
@@ -4874,18 +4876,18 @@
 
             // 兜底：非 idle 时确保机房动画在播，idle 时静止
             const effectiveStateForServer = pendingDesiredState || currentState;
-            if (serverroom) {
-                if (effectiveStateForServer === 'idle') {
-                    if (serverroom.anims.isPlaying) {
-                        serverroom.anims.stop();
-                        serverroom.setFrame(0);
-                    }
-                } else {
-                    if (!serverroom.anims.isPlaying || serverroom.anims.currentAnim?.key !== 'serverroom_on') {
-                        serverroom.anims.play('serverroom_on', true);
-                    }
-                }
-            }
+            // if (serverroom) {
+            //     if (effectiveStateForServer === 'idle') {
+            //         if (serverroom.anims.isPlaying) {
+            //             serverroom.anims.stop();
+            //             serverroom.setFrame(0);
+            //         }
+            //     } else {
+            //         if (!serverroom.anims.isPlaying || serverroom.anims.currentAnim?.key !== 'serverroom_on') {
+            //             serverroom.anims.play('serverroom_on', true);
+            //         }
+            //     }
+            // }
 
             // error 状态：显示 bug 动画，并在两点之间来回移动
             if (window.errorBug) {
@@ -5029,14 +5031,14 @@
             }
 
             // Server room logic
-            if (serverroom) {
-                if (nextState === 'idle') {
-                    serverroom.anims.stop();
-                    serverroom.setFrame(0);
-                } else {
-                    serverroom.anims.play('serverroom_on', true);
-                }
-            }
+            // if (serverroom) {
+            //     if (nextState === 'idle') {
+            //         serverroom.anims.stop();
+            //         serverroom.setFrame(0);
+            //     } else {
+            //         serverroom.anims.play('serverroom_on', true);
+            //     }
+            // }
 
             // Sync animation logic: default frame0; syncing play loop
             if (syncAnimSprite) {
