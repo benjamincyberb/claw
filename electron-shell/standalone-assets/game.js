@@ -401,32 +401,32 @@ function create() {
   });
 
   // === 小猫（来自 LAYOUT）===
-  const catsFrameCount = 16;
-  const randomCatFrame = Math.floor(Math.random() * catsFrameCount);
-  const cat = game.add.sprite(LAYOUT.furniture.cat.x, LAYOUT.furniture.cat.y, 'cats', randomCatFrame).setOrigin(LAYOUT.furniture.cat.origin.x, LAYOUT.furniture.cat.origin.y);
-  cat.setDepth(LAYOUT.furniture.cat.depth);
-  cat.setInteractive({ useHandCursor: true });
-  window.catSprite = cat;
-  window.catsFrameCount = catsFrameCount;
-  cat.on('pointerdown', () => {
-    const next = Math.floor(Math.random() * window.catsFrameCount);
-    window.catSprite.setFrame(next);
-  });
+  // const catsFrameCount = 16;
+  // const randomCatFrame = Math.floor(Math.random() * catsFrameCount);
+  // const cat = game.add.sprite(LAYOUT.furniture.cat.x, LAYOUT.furniture.cat.y, 'cats', randomCatFrame).setOrigin(LAYOUT.furniture.cat.origin.x, LAYOUT.furniture.cat.origin.y);
+  // cat.setDepth(LAYOUT.furniture.cat.depth);
+  // cat.setInteractive({ useHandCursor: true });
+  // window.catSprite = cat;
+  // window.catsFrameCount = catsFrameCount;
+  // cat.on('pointerdown', () => {
+  //   const next = Math.floor(Math.random() * window.catsFrameCount);
+  //   window.catSprite.setFrame(next);
+  // });
 
   // === 咖啡机（来自 LAYOUT）===
-  this.anims.create({
-    key: 'coffee_machine',
-    frames: this.anims.generateFrameNumbers('coffee_machine', { start: 0, end: 95 }),
-    frameRate: 12.5,
-    repeat: -1
-  });
-  const coffeeMachine = this.add.sprite(
-    LAYOUT.furniture.coffeeMachine.x,
-    LAYOUT.furniture.coffeeMachine.y,
-    'coffee_machine'
-  ).setOrigin(LAYOUT.furniture.coffeeMachine.origin.x, LAYOUT.furniture.coffeeMachine.origin.y);
-  coffeeMachine.setDepth(LAYOUT.furniture.coffeeMachine.depth);
-  coffeeMachine.anims.play('coffee_machine', true);
+  // this.anims.create({
+  //   key: 'coffee_machine',
+  //   frames: this.anims.generateFrameNumbers('coffee_machine', { start: 0, end: 95 }),
+  //   frameRate: 12.5,
+  //   repeat: -1
+  // });
+  // const coffeeMachine = this.add.sprite(
+  //   LAYOUT.furniture.coffeeMachine.x,
+  //   LAYOUT.furniture.coffeeMachine.y,
+  //   'coffee_machine'
+  // ).setOrigin(LAYOUT.furniture.coffeeMachine.origin.x, LAYOUT.furniture.coffeeMachine.origin.y);
+  // coffeeMachine.setDepth(LAYOUT.furniture.coffeeMachine.depth);
+  // coffeeMachine.anims.play('coffee_machine', true);
 
   // === 服务器区（来自 LAYOUT）===
   this.anims.create({
@@ -446,12 +446,12 @@ function create() {
   serverroom.setFrame(0);
 
   // === 新办公桌（来自 LAYOUT，强制透明 PNG）===
-  const desk = this.add.image(
-    LAYOUT.furniture.desk.x,
-    LAYOUT.furniture.desk.y,
-    'desk_v2'
-  ).setOrigin(LAYOUT.furniture.desk.origin.x, LAYOUT.furniture.desk.origin.y);
-  desk.setDepth(LAYOUT.furniture.desk.depth);
+  // const desk = this.add.image(
+  //   LAYOUT.furniture.desk.x,
+  //   LAYOUT.furniture.desk.y,
+  //   'desk_v2'
+  // ).setOrigin(LAYOUT.furniture.desk.origin.x, LAYOUT.furniture.desk.origin.y);
+  // desk.setDepth(LAYOUT.furniture.desk.depth);
 
   // === 花盆（来自 LAYOUT）===
   const flowerFrameCount = 16;

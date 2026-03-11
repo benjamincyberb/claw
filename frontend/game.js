@@ -386,19 +386,19 @@ function create() {
   game.add.text(plaqueX + 190, plaqueY, '⭐', { fontFamily: 'ArkPixel, monospace', fontSize: '20px' }).setOrigin(0.5);
 
   // === 植物们（来自 LAYOUT）===
-  const plantFrameCount = 16;
-  for (let i = 0; i < LAYOUT.furniture.plants.length; i++) {
-    const p = LAYOUT.furniture.plants[i];
-    const randomPlantFrame = Math.floor(Math.random() * plantFrameCount);
-    const plant = game.add.sprite(p.x, p.y, 'plants', randomPlantFrame).setOrigin(0.5);
-    plant.setDepth(p.depth);
-    plant.setInteractive({ useHandCursor: true });
-    window[`plantSprite${i === 0 ? '' : i + 1}`] = plant;
-    plant.on('pointerdown', (() => {
-      const next = Math.floor(Math.random() * plantFrameCount);
-      plant.setFrame(next);
-    }));
-  }
+  // const plantFrameCount = 16;
+  // for (let i = 0; i < LAYOUT.furniture.plants.length; i++) {
+  //   const p = LAYOUT.furniture.plants[i];
+  //   const randomPlantFrame = Math.floor(Math.random() * plantFrameCount);
+  //   const plant = game.add.sprite(p.x, p.y, 'plants', randomPlantFrame).setOrigin(0.5);
+  //   plant.setDepth(p.depth);
+  //   plant.setInteractive({ useHandCursor: true });
+  //   window[`plantSprite${i === 0 ? '' : i + 1}`] = plant;
+  //   plant.on('pointerdown', (() => {
+  //     const next = Math.floor(Math.random() * plantFrameCount);
+  //     plant.setFrame(next);
+  //   }));
+  // }
 
   // === 海报（来自 LAYOUT）===
   const postersFrameCount = 32;
@@ -427,19 +427,19 @@ function create() {
   });
 
   // === 咖啡机（来自 LAYOUT）===
-  this.anims.create({
-    key: 'coffee_machine',
-    frames: this.anims.generateFrameNumbers('coffee_machine', { start: 0, end: 95 }),
-    frameRate: 12.5,
-    repeat: -1
-  });
-  const coffeeMachine = this.add.sprite(
-    LAYOUT.furniture.coffeeMachine.x,
-    LAYOUT.furniture.coffeeMachine.y,
-    'coffee_machine'
-  ).setOrigin(LAYOUT.furniture.coffeeMachine.origin.x, LAYOUT.furniture.coffeeMachine.origin.y);
-  coffeeMachine.setDepth(LAYOUT.furniture.coffeeMachine.depth);
-  coffeeMachine.anims.play('coffee_machine', true);
+  // this.anims.create({
+  //   key: 'coffee_machine',
+  //   frames: this.anims.generateFrameNumbers('coffee_machine', { start: 0, end: 95 }),
+  //   frameRate: 12.5,
+  //   repeat: -1
+  // });
+  // const coffeeMachine = this.add.sprite(
+  //   LAYOUT.furniture.coffeeMachine.x,
+  //   LAYOUT.furniture.coffeeMachine.y,
+  //   'coffee_machine'
+  // ).setOrigin(LAYOUT.furniture.coffeeMachine.origin.x, LAYOUT.furniture.coffeeMachine.origin.y);
+  // coffeeMachine.setDepth(LAYOUT.furniture.coffeeMachine.depth);
+  // coffeeMachine.anims.play('coffee_machine', true);
 
   // === 服务器区（来自 LAYOUT）===
   this.anims.create({
@@ -459,12 +459,12 @@ function create() {
   serverroom.setFrame(0);
 
   // === 新办公桌（来自 LAYOUT，强制透明 PNG）===
-  const desk = this.add.image(
-    LAYOUT.furniture.desk.x,
-    LAYOUT.furniture.desk.y,
-    'desk_v2'
-  ).setOrigin(LAYOUT.furniture.desk.origin.x, LAYOUT.furniture.desk.origin.y);
-  desk.setDepth(LAYOUT.furniture.desk.depth);
+  // const desk = this.add.image(
+  //   LAYOUT.furniture.desk.x,
+  //   LAYOUT.furniture.desk.y,
+  //   'desk_v2'
+  // ).setOrigin(LAYOUT.furniture.desk.origin.x, LAYOUT.furniture.desk.origin.y);
+  // desk.setDepth(LAYOUT.furniture.desk.depth);
 
   // === 花盆（来自 LAYOUT）===
   const flowerFrameCount = 16;
