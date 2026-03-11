@@ -4607,16 +4607,16 @@
             // Random flower pot at (310,390), default scale 0.8 (top layer)
             const flowerFrameCount = Math.max(1, FLOWERS_FRAME_COLS * FLOWERS_FRAME_ROWS); // 动态帧数
             const randomFlowerFrame = Math.floor(Math.random() * flowerFrameCount);
-            const flower = this.add.sprite(310, 390, 'flowers', randomFlowerFrame).setOrigin(0.5);
-            flower.setScale(0.8);
-            flower.setDepth(1100); // highest among desk/starWorking
-            flower.setInteractive({ useHandCursor: true });
-            window.flowerSprite = flower;
-            window.flowerFrameCount = flowerFrameCount;
-            flower.on('pointerdown', () => {
-                const next = Math.floor(Math.random() * window.flowerFrameCount);
-                window.flowerSprite.setFrame(next);
-            });
+            // const flower = this.add.sprite(310, 390, 'flowers', randomFlowerFrame).setOrigin(0.5);
+            // flower.setScale(0.8);
+            // flower.setDepth(1100); // highest among desk/starWorking
+            // flower.setInteractive({ useHandCursor: true });
+            // window.flowerSprite = flower;
+            // window.flowerFrameCount = flowerFrameCount;
+            // flower.on('pointerdown', () => {
+            //     const next = Math.floor(Math.random() * window.flowerFrameCount);
+            //     window.flowerSprite.setFrame(next);
+            // });
 
             // Star working at desk (217,333)
             this.anims.create({

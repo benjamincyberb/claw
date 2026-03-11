@@ -454,23 +454,23 @@ function create() {
   // desk.setDepth(LAYOUT.furniture.desk.depth);
 
   // === 花盆（来自 LAYOUT）===
-  const flowerFrameCount = 16;
-  const randomFlowerFrame = Math.floor(Math.random() * flowerFrameCount);
-  const flower = this.add.sprite(
-    LAYOUT.furniture.flower.x,
-    LAYOUT.furniture.flower.y,
-    'flowers',
-    randomFlowerFrame
-  ).setOrigin(LAYOUT.furniture.flower.origin.x, LAYOUT.furniture.flower.origin.y);
-  flower.setScale(LAYOUT.furniture.flower.scale || 1);
-  flower.setDepth(LAYOUT.furniture.flower.depth);
-  flower.setInteractive({ useHandCursor: true });
-  window.flowerSprite = flower;
-  window.flowerFrameCount = flowerFrameCount;
-  flower.on('pointerdown', () => {
-    const next = Math.floor(Math.random() * window.flowerFrameCount);
-    window.flowerSprite.setFrame(next);
-  });
+  // const flowerFrameCount = 16;
+  // const randomFlowerFrame = Math.floor(Math.random() * flowerFrameCount);
+  // const flower = this.add.sprite(
+  //   LAYOUT.furniture.flower.x,
+  //   LAYOUT.furniture.flower.y,
+  //   'flowers',
+  //   randomFlowerFrame
+  // ).setOrigin(LAYOUT.furniture.flower.origin.x, LAYOUT.furniture.flower.origin.y);
+  // flower.setScale(LAYOUT.furniture.flower.scale || 1);
+  // flower.setDepth(LAYOUT.furniture.flower.depth);
+  // flower.setInteractive({ useHandCursor: true });
+  // window.flowerSprite = flower;
+  // window.flowerFrameCount = flowerFrameCount;
+  // flower.on('pointerdown', () => {
+  //   const next = Math.floor(Math.random() * window.flowerFrameCount);
+  //   window.flowerSprite.setFrame(next);
+  // });
 
   // === Star 在桌前工作（来自 LAYOUT）===
   this.anims.create({
