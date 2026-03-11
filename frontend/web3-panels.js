@@ -45,7 +45,7 @@ const DegenPanels = (() => {
           💰 悬赏任务
         </button>
         <button class="web3-tab" data-tab="token" onclick="DegenPanels.switchTab('token')">
-          🐕 $XDOGE
+          🐕 $XDOG
         </button>
         <button class="web3-tab" data-tab="ipfs" onclick="DegenPanels.switchTab('ipfs')">
           📁 IPFS 永存
@@ -90,21 +90,21 @@ const DegenPanels = (() => {
             </button>
           </div>
           <div class="web3-section-subtitle">
-            老板锁仓 $XDOGE → 牛马完成任务 → 智能合约自动打款。老板无法赖账，因为代码即法律。
+            老板锁仓 $XDOG → 牛马完成任务 → 智能合约自动打款。老板无法赖账，因为代码即法律。
           </div>
           <div class="bounty-list" id="bounty-list"></div>
         </div>
 
         <!-- Token Panel -->
         <div class="web3-panel" id="panel-token">
-          <div class="web3-section-title">🐕 $XDOGE 币</div>
+          <div class="web3-section-title">🐕 $XDOG 币</div>
           <div class="web3-section-subtitle">
             公司专用工资代币。无情嘲讽：老板无法赖账，但代币可能毫无价值。
           </div>
           <div class="attendance-stats" id="token-stats"></div>
           <div style="text-align:center; margin-top:24px;">
             <button class="clock-in-btn" id="faucet-btn" onclick="DegenPanels.handleFaucet()" style="background:linear-gradient(135deg, var(--degen-cyan), #0891b2); border-color:var(--degen-cyan);">
-              🚰 领取水龙头 (10,000 $XDOGE)
+              🚰 领取水龙头 (10,000 $XDOG)
             </button>
           </div>
         </div>
@@ -146,7 +146,7 @@ const DegenPanels = (() => {
               🚨 Execute Rug Pull 🚨
             </button>
             <div class="rug-pull-warning">
-              ⚠️ WARNING: This will drain ALL company funds (ETH + $XDOGE) to the boss's wallet.
+              ⚠️ WARNING: This will drain ALL company funds (ETH + $XDOG) to the boss's wallet.
               This action is irreversible and will be permanently recorded on the blockchain.
               <br><br>
               "The blockchain remembers everything. Your employees will too."
@@ -199,7 +199,7 @@ const DegenPanels = (() => {
       <div class="web3-modal">
         <h3>💰 发布悬赏任务</h3>
         <input type="text" id="bounty-desc-input" placeholder="任务描述 (e.g. 修复凌晨3点的生产Bug)">
-        <input type="number" id="bounty-amount-input" placeholder="悬赏金额 ($XDOGE)" min="1">
+        <input type="number" id="bounty-amount-input" placeholder="悬赏金额 ($XDOG)" min="1">
         <div class="modal-actions">
           <button class="bounty-action-btn" style="border-color:var(--degen-text-dim);color:var(--degen-text-dim)" onclick="DegenPanels.hideCreateBountyModal()">取消</button>
           <button class="create-bounty-btn" onclick="DegenPanels.handleCreateBounty()">🔒 锁仓发布</button>
@@ -284,14 +284,14 @@ const DegenPanels = (() => {
       if (result.role.includes('CEO')) roleBadge.className = 'role-badge role-ceo';
       else if (result.role.includes('经理')) roleBadge.className = 'role-badge role-manager';
       else if (result.role.includes('员工')) roleBadge.className = 'role-badge role-employee';
-      else roleBadge.className = 'role-badge role-xdoge';
+      else roleBadge.className = 'role-badge role-XDOG';
 
       // Address
       document.getElementById('web3-address-display').textContent = DegenWeb3.shortAddr(result.address);
 
       // Balance
-      const balance = await DegenWeb3.getXDogeBalance();
-      document.getElementById('web3-balance-display').textContent = `💰 ${Number(balance).toLocaleString()} $XDOGE`;
+      const balance = await DegenWeb3.getXDOGBalance();
+      document.getElementById('web3-balance-display').textContent = `💰 ${Number(balance).toLocaleString()} $XDOG`;
 
       // Show panels
       document.getElementById('web3-panels-container').style.display = 'block';
@@ -439,7 +439,7 @@ const DegenPanels = (() => {
           html += `
             <div class="bounty-card">
               <div class="bounty-header">
-                <span class="bounty-amount">💰 ${Number(b.amount).toLocaleString()} $XDOGE</span>
+                <span class="bounty-amount">💰 ${Number(b.amount).toLocaleString()} $XDOG</span>
                 <span class="bounty-status ${statusClasses[status]}">${statusLabels[status]}</span>
               </div>
               <div class="bounty-desc">${_escapeHtml(b.description)}</div>
@@ -477,12 +477,12 @@ const DegenPanels = (() => {
     }
 
     try {
-      showToast('🔒 锁仓 $XDOGE 代币中...', 'pending');
+      showToast('🔒 锁仓 $XDOG 代币中...', 'pending');
       const tx = await DegenWeb3.createBounty(desc, amount);
       if (tx.wait) await tx.wait();
 
       hideCreateBountyModal();
-      showToast(`✅ 悬赏已发布！${amount} $XDOGE 已锁仓`, 'success');
+      showToast(`✅ 悬赏已发布！${amount} $XDOG 已锁仓`, 'success');
       loadBountyPanel();
     } catch (err) {
       showToast(`❌ ${err.message}`, 'error');
@@ -494,7 +494,7 @@ const DegenPanels = (() => {
       showToast('🤚 认领中...', 'pending');
       const tx = await DegenWeb3.claimBounty(bountyId);
       if (tx.wait) await tx.wait();
-      showToast('✅ 认领成功！开始干活吧 XDOGE', 'success');
+      showToast('✅ 认领成功！开始干活吧 XDOG', 'success');
       loadBountyPanel();
     } catch (err) {
       showToast(`❌ ${err.message}`, 'error');
@@ -506,7 +506,7 @@ const DegenPanels = (() => {
       showToast('✅ 确认任务完成中...', 'pending');
       const tx = await DegenWeb3.completeBounty(bountyId);
       if (tx.wait) await tx.wait();
-      showToast('💰 $XDOGE 已秒打入钱包！Code is Law！', 'success');
+      showToast('💰 $XDOG 已秒打入钱包！Code is Law！', 'success');
       loadBountyPanel();
       loadTokenPanel();
     } catch (err) {
@@ -519,12 +519,12 @@ const DegenPanels = (() => {
   // ═══════════════════════════════════════════════════
   async function loadTokenPanel() {
     try {
-      const balance = await DegenWeb3.getXDogeBalance();
+      const balance = await DegenWeb3.getXDOGBalance();
       const state = DegenWeb3.getState();
       const statsHtml = `
         <div class="stat-card">
           <div class="stat-value">${Number(balance).toLocaleString()}</div>
-          <div class="stat-label">$XDOGE 余额</div>
+          <div class="stat-label">$XDOG 余额</div>
         </div>
         <div class="stat-card">
           <div class="stat-value">${state.role || '—'}</div>
@@ -549,16 +549,16 @@ const DegenPanels = (() => {
     try {
       const tx = await DegenWeb3.claimFaucet();
       if (tx.wait) await tx.wait();
-      showToast('🚰 成功领取 10,000 $XDOGE! 恭喜你拥有了一堆可能毫无价值的代币！', 'success');
+      showToast('🚰 成功领取 10,000 $XDOG! 恭喜你拥有了一堆可能毫无价值的代币！', 'success');
       loadTokenPanel();
 
       // Update header balance
-      const balance = await DegenWeb3.getXDogeBalance();
-      document.getElementById('web3-balance-display').textContent = `💰 ${Number(balance).toLocaleString()} $XDOGE`;
+      const balance = await DegenWeb3.getXDOGBalance();
+      document.getElementById('web3-balance-display').textContent = `💰 ${Number(balance).toLocaleString()} $XDOG`;
 
       btn.textContent = '✅ 已领取';
     } catch (err) {
-      btn.textContent = '🚰 领取水龙头 (10,000 $XDOGE)';
+      btn.textContent = '🚰 领取水龙头 (10,000 $XDOG)';
       btn.disabled = false;
       showToast(`❌ ${err.message}`, 'error');
     }
@@ -628,7 +628,7 @@ const DegenPanels = (() => {
         </div>
         <div class="company-stat">
           <div class="value">${Number(stats.tokenBalance).toLocaleString()}</div>
-          <div class="label">公司 $XDOGE</div>
+          <div class="label">公司 $XDOG</div>
         </div>
         <div class="company-stat">
           <div class="value">${stats.employeeCount}</div>
@@ -684,7 +684,7 @@ const DegenPanels = (() => {
         '> Initializing rug pull protocol...',
         '> Connecting to smart contract...',
         '> Draining ETH balance...',
-        '> Draining $XDOGE tokens...',
+        '> Draining $XDOG tokens...',
         '> Transferring to boss wallet...',
         '> Covering tracks... just kidding, blockchain is forever.',
         '',
@@ -879,7 +879,7 @@ const DegenPanels = (() => {
         
         // Refresh panels
         loadOnchainOSPanel();
-        if (symbol === 'XDOGE') loadTokenPanel(); 
+        if (symbol === 'XDOG') loadTokenPanel(); 
         
     } catch (err) {
         showToast(`❌ 转账失败: ${err.message}`, 'error');

@@ -9,13 +9,13 @@ async function main() {
     console.log("💰 Balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "ETH");
     console.log("---");
 
-    // 1. Deploy XDogeCoin ($XDOGE)
-    console.log("📦 Deploying XDogeCoin ($XDOGE)...");
-    const XDogeCoin = await ethers.getContractFactory("XDogeCoin");
-    const xDogeCoin = await XDogeCoin.deploy();
-    await xDogeCoin.waitForDeployment();
-    const xDogeAddress = await xDogeCoin.getAddress();
-    console.log("✅ XDogeCoin deployed to:", xDogeAddress);
+    // 1. Deploy XDOGCoin ($XDOG)
+    console.log("📦 Deploying XDOGCoin ($XDOG)...");
+    const XDOGCoin = await ethers.getContractFactory("XDOGCoin");
+    const XDOGCoin = await XDOGCoin.deploy();
+    await XDOGCoin.waitForDeployment();
+    const XDOGAddress = await XDOGCoin.getAddress();
+    console.log("✅ XDOGCoin deployed to:", XDOGAddress);
 
     // 2. Deploy DailyPOAP
     console.log("📦 Deploying DailyPOAP...");
@@ -28,7 +28,7 @@ async function main() {
     // 3. Deploy BountyEscrow
     console.log("📦 Deploying BountyEscrow...");
     const BountyEscrow = await ethers.getContractFactory("BountyEscrow");
-    const bountyEscrow = await BountyEscrow.deploy(xDogeAddress);
+    const bountyEscrow = await BountyEscrow.deploy(XDOGAddress);
     await bountyEscrow.waitForDeployment();
     const bountyAddress = await bountyEscrow.getAddress();
     console.log("✅ BountyEscrow deployed to:", bountyAddress);
@@ -38,7 +38,7 @@ async function main() {
     console.log("📦 Deploying DegenOffice...");
     const DegenOffice = await ethers.getContractFactory("DegenOffice");
     const degenOffice = await DegenOffice.deploy(
-        xDogeAddress,
+        XDOGAddress,
         ethers.ZeroAddress, // BAYC testnet (set later)
         ethers.ZeroAddress  // Pudgy testnet (set later)
     );
@@ -53,7 +53,7 @@ async function main() {
         deployer: deployer.address,
         deployedAt: new Date().toISOString(),
         contracts: {
-            XDogeCoin: xDogeAddress,
+            XDOGCoin: XDOGAddress,
             DailyPOAP: poapAddress,
             BountyEscrow: bountyAddress,
             DegenOffice: officeAddress
@@ -66,7 +66,7 @@ async function main() {
 
     console.log("\n🎉 Degen-Office deployment complete!");
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log("XDogeCoin:    ", xDogeAddress);
+    console.log("XDOGCoin:    ", XDOGAddress);
     console.log("DailyPOAP:    ", poapAddress);
     console.log("BountyEscrow: ", bountyAddress);
     console.log("DegenOffice:  ", officeAddress);

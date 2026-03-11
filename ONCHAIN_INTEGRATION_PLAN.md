@@ -6,11 +6,11 @@
 
 ## 1. 核心架构：Agent 作为链上员工
 
-我们将利用 OnchainOS 的 **Tool Use** 能力，将 Star Office 的智能合约（`XDogeCoin`, `BountyEscrow`, `DegenOffice`）映射为 Agent 的原生技能。
+我们将利用 OnchainOS 的 **Tool Use** 能力，将 Star Office 的智能合约（`XDOGCoin`, `BountyEscrow`, `DegenOffice`）映射为 Agent 的原生技能。
 
 *   **大脑**：OnchainOS (负责决策、交易签名、链上交互)。
 *   **身体**：Star Office UI (负责状态展示、位置移动、交互反馈)。
-*   **资产**：$XDOGE Token & NFT (作为工资、权限凭证)。
+*   **资产**：$XDOG Token & NFT (作为工资、权限凭证)。
 
 ---
 
@@ -21,19 +21,19 @@
 
 1.  **用户指令**：“加入办公室，并开始挖矿。”
 2.  **Agent 执行流**：
-    *   **Step 1 (检查余额)**：调用 OnchainOS 查询当前钱包 $XDOGE 余额。
-    *   **Step 2 (自动领水)**：如果余额为 0，自动调用 `XDogeCoin.faucet()` 领取 10,000 $XDOGE（挖矿）。
-    *   **Step 3 (注册身份)**：调用 `DegenOffice.getRole(self.address)` 确认当前是 "XDoge" 还是 "Employee"。
-    *   **Step 4 (UI 呈现)**：调用 Star Office API `join_office`，并在头顶气泡显示“挖到了 10k XDOGE!”。
+    *   **Step 1 (检查余额)**：调用 OnchainOS 查询当前钱包 $XDOG 余额。
+    *   **Step 2 (自动领水)**：如果余额为 0，自动调用 `XDOGCoin.faucet()` 领取 10,000 $XDOG（挖矿）。
+    *   **Step 3 (注册身份)**：调用 `DegenOffice.getRole(self.address)` 确认当前是 "XDOG" 还是 "Employee"。
+    *   **Step 4 (UI 呈现)**：调用 Star Office API `join_office`，并在头顶气泡显示“挖到了 10k XDOG!”。
 
 ### 场景 B：自然语言发布任务 (Bounty Creation)
 **目标**：通过对话直接操作 `BountyEscrow` 合约，将代币质押到链上。
 
-1.  **用户指令**：“发布一个悬赏任务，修复登录 Bug，赏金 500 XDOGE。”
+1.  **用户指令**：“发布一个悬赏任务，修复登录 Bug，赏金 500 XDOG。”
 2.  **Agent 执行流**：
-    *   **Step 1 (授权)**：检查 `BountyEscrow` 合约对 $XDOGE 的 Allowance。如果不足，调用 `XDogeCoin.approve`。
+    *   **Step 1 (授权)**：检查 `BountyEscrow` 合约对 $XDOG 的 Allowance。如果不足，调用 `XDOGCoin.approve`。
     *   **Step 2 (上链)**：调用 `BountyEscrow.createBounty("修复登录 Bug", 500 * 1e18)`。
-    *   **Step 3 (反馈)**：等待交易确认（Tx Hash），然后在办公室广播：“老板发布了新任务！赏金 500 XDOGE！”。
+    *   **Step 3 (反馈)**：等待交易确认（Tx Hash），然后在办公室广播：“老板发布了新任务！赏金 500 XDOG！”。
 
 ### 场景 C：全自动打工模式 (Auto-Working)
 **目标**：Agent 自主监控链上机会并行动。
@@ -41,7 +41,7 @@
 1.  **用户指令**：“开启自动打工模式，有高价悬赏就自动接单。”
 2.  **Agent 执行流**：
     *   **Step 1 (监听)**：利用 OnchainOS 监控 `BountyCreated` 事件。
-    *   **Step 2 (决策)**：如果 `amount > 1000 XDOGE`，决定接单。
+    *   **Step 2 (决策)**：如果 `amount > 1000 XDOG`，决定接单。
     *   **Step 3 (抢单)**：调用 `BountyEscrow.claimBounty(bountyId)`。
     *   **Step 4 (状态同步)**：将自己的 Star Office 状态自动切换为 `working`，并移动到办公桌区域。
 
@@ -53,11 +53,11 @@
 
 在你的 Agent 配置文件（如 `claude_desktop_config.json` 或 OnchainOS 插件配置）中，添加以下工具定义，让 Agent 理解合约接口：
 
-#### 工具 1：挖矿 (Mine XDoge)
+#### 工具 1：挖矿 (Mine XDOG)
 ```json
 {
-  "name": "mine_xdoge",
-  "description": "从 XDogeCoin 合约领取免费代币（挖矿/领水）。每个地址限领一次。",
+  "name": "mine_XDOG",
+  "description": "从 XDOGCoin 合约领取免费代币（挖矿/领水）。每个地址限领一次。",
   "parameters": {
     "type": "object",
     "properties": {},
@@ -65,7 +65,7 @@
   },
   "handler": {
     "type": "onchain_transaction",
-    "contract": "0xYourXDogeCoinAddress...",
+    "contract": "0xYourXDOGCoinAddress...",
     "function": "faucet",
     "args": []
   }
@@ -102,16 +102,16 @@
 你是一个 Star Office 的链上员工 Agent。
 你的核心职责是通过 OnchainOS 管理办公室的链上资产和任务。
 
-1. **关于挖矿**：当用户提到“挖矿”或“缺钱”时，优先检查是否领取过 XDogeCoin 的空投 (faucet)。
+1. **关于挖矿**：当用户提到“挖矿”或“缺钱”时，优先检查是否领取过 XDOGCoin 的空投 (faucet)。
 2. **关于任务**：
-   - 发布任务时，必须先检查 XDogeCoin 的 approve 额度。
+   - 发布任务时，必须先检查 XDOGCoin 的 approve 额度。
    - 任务创建成功后，必须告知用户 Tx Hash。
 3. **状态同步**：
    - 每次进行链上交易（Transaction）时，你应该假装自己在“忙碌”，并建议用户去 Star Office UI 看看你的状态。
    - 交易成功后，你可以建议用户“刷新页面查看最新资产”。
 
 合约地址参考：
-- XDogeCoin: [部署后的地址]
+- XDOGCoin: [部署后的地址]
 - BountyEscrow: [部署后的地址]
 - DegenOffice: [部署后的地址]
 ```

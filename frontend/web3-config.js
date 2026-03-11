@@ -19,7 +19,7 @@ const DegenWeb3 = (() => {
     // Contract addresses (updated after deployment)
     // These will be loaded from deployed-addresses.json or set manually
     let CONTRACT_ADDRESSES = {
-        XDogeCoin: '',
+        XDOGCoin: '',
         DailyPOAP: '',
         BountyEscrow: '',
         DegenOffice: ''
@@ -46,11 +46,11 @@ const DegenWeb3 = (() => {
             const val = localStorage.getItem(`degen_office_${key}`);
             return val ? JSON.parse(val) : defaultVal;
         },
-        getXDogeBalance: function (addr) {
+        getXDOGBalance: function (addr) {
             const balances = this.load('balances', {});
             return balances[addr] || '10000'; // Initial gift
         },
-        updateXDogeBalance: function (addr, amount) {
+        updateXDOGBalance: function (addr, amount) {
             const balances = this.load('balances', {});
             const current = Number(balances[addr] || '10000');
             balances[addr] = String(current + Number(amount));
@@ -176,8 +176,8 @@ const DegenWeb3 = (() => {
 
         // Initialize contract instances (only if addresses are provided)
         const workingContracts = {};
-        if (CONTRACT_ADDRESSES.XDogeCoin) {
-            workingContracts.xDogeCoin = new ethers.Contract(CONTRACT_ADDRESSES.XDogeCoin, CONTRACT_ABIS.XDogeCoin, signer);
+        if (CONTRACT_ADDRESSES.XDOGCoin) {
+            workingContracts.XDOGCoin = new ethers.Contract(CONTRACT_ADDRESSES.XDOGCoin, CONTRACT_ABIS.XDOGCoin, signer);
         }
         if (CONTRACT_ADDRESSES.DailyPOAP) {
             workingContracts.dailyPOAP = new ethers.Contract(CONTRACT_ADDRESSES.DailyPOAP, CONTRACT_ABIS.DailyPOAP, signer);
@@ -228,21 +228,21 @@ const DegenWeb3 = (() => {
     // ═══════════════════════════════════════════════════
     // Token Operations
     // ═══════════════════════════════════════════════════
-    async function getXDogeBalance(address) {
-        if (isMockMode) return HYBRID_STORE.getXDogeBalance(address || connectedAddress);
-        if (!contracts?.xDogeCoin) return HYBRID_STORE.getXDogeBalance(address || connectedAddress);
+    async function getXDOGBalance(address) {
+        if (isMockMode) return HYBRID_STORE.getXDOGBalance(address || connectedAddress);
+        if (!contracts?.XDOGCoin) return HYBRID_STORE.getXDOGBalance(address || connectedAddress);
         const addr = address || connectedAddress;
         try {
-            const bal = await contracts.xDogeCoin.balanceOf(addr);
+            const bal = await contracts.XDOGCoin.balanceOf(addr);
             return ethers.formatEther(bal);
         } catch (e) {
-            return HYBRID_STORE.getXDogeBalance(addr);
+            return HYBRID_STORE.getXDOGBalance(addr);
         }
     }
 
     async function claimFaucet() {
         await _mockDelay();
-        const newBalance = HYBRID_STORE.updateXDogeBalance(connectedAddress, '10000');
+        const newBalance = HYBRID_STORE.updateXDOGBalance(connectedAddress, '10000');
         return { hash: _mockHash(), confirmed: true, newBalance };
     }
 
@@ -295,7 +295,7 @@ const DegenWeb3 = (() => {
         const b = bounties[bountyId];
         if (b) {
             HYBRID_STORE.updateBounty(bountyId, { status: 2 });
-            HYBRID_STORE.updateXDogeBalance(connectedAddress, b.amount);
+            HYBRID_STORE.updateXDOGBalance(connectedAddress, b.amount);
         }
         return { hash: _mockHash() };
     }
@@ -383,7 +383,7 @@ const DegenWeb3 = (() => {
             tokens: [
                 { symbol: 'ETH', balance: '1.5', valueUsd: '3750.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png' },
                 { symbol: 'USDT', balance: '5000.00', valueUsd: '5000.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/2800D6B909138C88.png' },
-                { symbol: 'XDOGE', balance: await getXDogeBalance(address), valueUsd: '100.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
+                { symbol: 'XDOG', balance: await getXDOGBalance(address), valueUsd: '100.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
                 { symbol: 'USDC', balance: '2500.00', valueUsd: '2500.00', icon: 'https://static.okx.com/cdn/assets/imgs/221/A6C4543743519890.png' }
             ]
         };
@@ -394,10 +394,9 @@ const DegenWeb3 = (() => {
         return { 
             hot: [
                 { rank: 1, symbol: 'BTC', price: '$65,000', change: '+2.1%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1392666030995000.png' },
-                { rank: 2, symbol: 'ETH', price: '$2,500', change: '-1.2%', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png' },
-                { rank: 3, symbol: 'XDOGE', price: '$0.001', change: '+420.69%', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
-                { rank: 4, symbol: 'SOL', price: '$145.20', change: '+5.5%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1857973053746766.png' },
-                { rank: 5, symbol: 'DOGE', price: '$0.12', change: '+8.8%', icon: 'https://static.okx.com/cdn/assets/imgs/221/4472942699863267.png' }
+                { rank: 2, symbol: 'ETH', price: '$2,039.33', change: '-1.2%', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E4C5F08F2B56C25.png' },
+                { rank: 3, symbol: 'XDOG', price: '$0.004857', change: '-3.9%', icon: 'https://static.okx.com/cdn/assets/imgs/221/D887642131908428.png' },
+                { rank: 4, symbol: 'SOL', price: '$86.8', change: '+5.5%', icon: 'https://static.okx.com/cdn/assets/imgs/221/1857973053746766.png' },
             ], 
             gainers: [] 
         };
@@ -427,13 +426,13 @@ const DegenWeb3 = (() => {
         
         if (!to || !amount) throw new Error("Invalid parameters");
         
-        // 1. Simulate balance check/deduction (only for XDOGE for now as it's the only one we track balance for)
-        if (symbol === 'XDOGE') {
-            const currentBal = Number(await getXDogeBalance(connectedAddress));
+        // 1. Simulate balance check/deduction (only for XDOG for now as it's the only one we track balance for)
+        if (symbol === 'XDOG') {
+            const currentBal = Number(await getXDOGBalance(connectedAddress));
             if (currentBal < Number(amount)) {
                 throw new Error("Insufficient balance");
             }
-            HYBRID_STORE.updateXDogeBalance(connectedAddress, -Number(amount));
+            HYBRID_STORE.updateXDOGBalance(connectedAddress, -Number(amount));
         }
         
         // 2. Record transaction
@@ -498,7 +497,7 @@ const DegenWeb3 = (() => {
     // Public API
     return {
         init, connectWallet, disconnectWallet, signIn,
-        getXDogeBalance, claimFaucet,
+        getXDOGBalance, claimFaucet,
         clockIn, hasClockedToday, getAttendanceHistory, depositStake,
         createBounty, claimBounty, completeBounty, getBounties,
         getCompanyStats, getEthPrice, executeRugPull, registerEmployee,
