@@ -28,7 +28,6 @@ LOSSLESS_FILES = [
 # 有损转换：背景图等，质量 85
 LOSSY_FILES = [
     "office_bg.png",
-    "sofa-idle.png",
     "desk.png"
 ]
 

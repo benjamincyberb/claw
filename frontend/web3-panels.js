@@ -18,7 +18,7 @@ const DegenPanels = (() => {
   function buildWalletBar() {
     return `
       <div id="web3-wallet-bar">
-        <div class="logo-text">⛓️ DEGEN-OFFICE</div>
+        <div class="logo-text">⛓️ XDOG-OFFICE</div>
         <div class="chain-badge">
           <span class="dot"></span>
           <span>${DegenWeb3.CHAIN.name} Testnet</span>

@@ -2393,7 +2393,7 @@
                 'star-idle-v5': 'star_idle',
                 'sofa-idle-v3': 'sofa_idle',
                 'sofa-shadow-v1': 'sofa_shadow',
-                'plants-spritesheet': 'plants',
+
                 'posters-spritesheet': 'posters',
                 'coffee-machine-v3-grid': 'coffee_machine',
                 'coffee-machine-shadow-v1': 'coffee_machine_shadow',
@@ -4377,14 +4377,14 @@
             // cache-busting to avoid stale background on client/CDN
             // use smaller/new map version provided by user
             this.load.image('office_bg', '/static/office_bg_small.webp?v={{VERSION_TIMESTAMP}}');
-            this.load.spritesheet('star_idle', '/static/star-idle-v5.png?v={{VERSION_TIMESTAMP}}', { frameWidth: 256, frameHeight: 256 });
+            // this.load.spritesheet('star_idle', '/static/star-idle-v5.png?v={{VERSION_TIMESTAMP}}', { frameWidth: 256, frameHeight: 256 });
 
             // Furniture
-            this.load.image('sofa_idle', '/static/sofa-idle-v3.png?v={{VERSION_TIMESTAMP}}');
+            // this.load.image('sofa_idle', '/static/sofa-idle-v3.png?v={{VERSION_TIMESTAMP}}');
             this.load.image('sofa_shadow', '/static/sofa-shadow-v1.png?v={{VERSION_TIMESTAMP}}');
 
             // Decor
-            this.load.spritesheet('plants', '/static/plants-spritesheet.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 160, frameHeight: 160 });
+
             this.load.spritesheet('posters', '/static/posters-spritesheet.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 160, frameHeight: 160 });
             this.load.spritesheet('coffee_machine', '/static/coffee-machine-v3-grid.webp?v={{VERSION_TIMESTAMP}}', { frameWidth: 230, frameHeight: 230 });
             this.load.image('coffee_machine_shadow', '/static/coffee-machine-shadow-v1.png?v={{VERSION_TIMESTAMP}}');
@@ -4434,7 +4434,9 @@
             // NOTE: coordinates are interpreted as the TOP-LEFT corner of the sprite
             const sofaShadow = this.add.image(IDLE_SOFA_ANCHOR.x, IDLE_SOFA_ANCHOR.y, 'sofa_shadow').setOrigin(0.5);
             sofaShadow.setDepth(9);
-            sofa = this.add.sprite(IDLE_SOFA_ANCHOR.x, IDLE_SOFA_ANCHOR.y, 'sofa_idle').setOrigin(0.5);
+            // sofa-idle removed
+            sofa = this.add.sprite(IDLE_SOFA_ANCHOR.x, IDLE_SOFA_ANCHOR.y, 'sofa_shadow').setOrigin(0.5);
+            sofa.setVisible(false);
             sofa.setDepth(10);
             areas = {
                 door: { x: 640, y: 550 }, // 墙的门（偏下 1/3 位置）
@@ -4467,14 +4469,15 @@
                 });
             }
 
-            star = game.physics.add.sprite(areas.breakroom.x, areas.breakroom.y, 'star_idle');
+            // star-idle removed, use placeholder
+            star = game.physics.add.sprite(areas.breakroom.x, areas.breakroom.y, 'sofa_shadow');
             star.setOrigin(0.5);
             star.setScale(IDLE_STAR_SCALE);
             star.setAlpha(0.95);
             star.setDepth(20); // Put Star on top of everything
             // Default: idle shows Star idle animation
-            star.setVisible(true);
-            star.anims.play('star_idle', true);
+            star.setVisible(false);
+            // star.anims.play('star_idle', true);
 
             // Sofa stays static when idle (no longer the main idle animation)
             sofa.anims.stop();
@@ -4499,20 +4502,7 @@
             game.add.text(plaqueX + 190, plaqueY, '⭐', { fontFamily: 'ArkPixel, monospace', fontSize: '20px' }).setOrigin(0.5);
             window.officePlaqueText = plaqueText;
 
-            // Random plant at (565,178) (frame 0-15, 160x160 each)
-            const plantFrameCount = 16;
-            const randomPlantFrame = Math.floor(Math.random() * plantFrameCount);
-            const plant = game.add.sprite(565, 178, 'plants', randomPlantFrame).setOrigin(0.5);
-            plant.setDepth(5);
-            plant.setInteractive({ useHandCursor: true });
-            // Expose to global for click handler
-            window.plantSprite = plant;
-            window.plantFrameCount = plantFrameCount;
-
-            plant.on('pointerdown', () => {
-                const next = Math.floor(Math.random() * window.plantFrameCount);
-                window.plantSprite.setFrame(next);
-            });
+            // Random plant at (565,178) (frame 0-15, 160x160 each) - REMOVED
 
             // Random plant at (230,185) (frame 0-15, 160x160 each)
             // const plant2Frame = Math.floor(Math.random() * plantFrameCount);
@@ -4667,7 +4657,7 @@
                     repeat: -1
                 });
             }
-            syncAnimSprite = this.add.sprite(1157, 592, 'sync_anim', 0).setOrigin(0.5);
+            //syncAnimSprite = this.add.sprite(1157, 592, 'sync_anim', 0).setOrigin(0.5);
             syncAnimSprite.setDepth(40);
             // default show first frame only
             syncAnimSprite.anims.stop();
@@ -4989,21 +4979,24 @@
             // Idle: show Star idle animation (main character)
             if (nextState === 'idle') {
                 sofa.anims.stop();
-                sofa.setTexture('sofa_idle');
+                // sofa.setTexture('sofa_idle');
+                sofa.setVisible(false);
 
                 if (window.starWorking) {
                     window.starWorking.setVisible(false);
                     window.starWorking.anims.stop();
                 }
 
-                star.setVisible(true);
-                star.setScale(IDLE_STAR_SCALE);
-                star.anims.play('star_idle', true);
+                // Star idle removed
+                star.setVisible(false);
+                // star.setScale(IDLE_STAR_SCALE);
+                // star.anims.play('star_idle', true);
                 star.setPosition(IDLE_SOFA_ANCHOR.x, IDLE_SOFA_ANCHOR.y);
             } else if (nextState === 'error') {
                 // Error: no working animation at desk
                 sofa.anims.stop();
-                sofa.setTexture('sofa_idle');
+                // sofa.setTexture('sofa_idle');
+                sofa.setVisible(false);
                 star.setVisible(false);
                 star.anims.stop();
                 if (window.starWorking) {
@@ -5013,7 +5006,8 @@
             } else if (nextState === 'syncing') {
                 // Syncing: also no working animation at desk
                 sofa.anims.stop();
-                sofa.setTexture('sofa_idle');
+                // sofa.setTexture('sofa_idle');
+                sofa.setVisible(false);
                 star.setVisible(false);
                 star.anims.stop();
                 if (window.starWorking) {
@@ -5023,7 +5017,8 @@
             } else {
                 // Non-idle non-error: starWorking animation at desk
                 sofa.anims.stop();
-                sofa.setTexture('sofa_idle');
+                // sofa.setTexture('sofa_idle');
+                sofa.setVisible(false);
                 // Hide moving star, show desk star
                 star.setVisible(false);
                 star.anims.stop();
@@ -5157,7 +5152,8 @@
                                 star.anims.play('star_idle', true);
                                 star.setPosition(IDLE_SOFA_ANCHOR.x, IDLE_SOFA_ANCHOR.y);
                                 sofa.anims.stop();
-                                sofa.setTexture('sofa_idle');
+                                // sofa.setTexture('sofa_idle');
+                                sofa.setVisible(false);
                             } else {
                                 // Arrived at desk area: switch to star_working animation
                                 star.setVisible(false);
@@ -5180,12 +5176,14 @@
                                 window.starWorking.setVisible(false);
                                 window.starWorking.anims.stop();
                             }
-                            star.setVisible(true);
-                            star.setScale(IDLE_STAR_SCALE);
-                            star.anims.play('star_idle', true);
+                            // Star idle removed
+                            star.setVisible(false);
+                            // star.setScale(IDLE_STAR_SCALE);
+                            // star.anims.play('star_idle', true);
                             star.setPosition(IDLE_SOFA_ANCHOR.x, IDLE_SOFA_ANCHOR.y);
                             sofa.anims.stop();
-                            sofa.setTexture('sofa_idle');
+                            // sofa.setTexture('sofa_idle');
+                            sofa.setVisible(false);
                         } else {
                             // Arrived at desk area: switch to star_working animation
                             star.setVisible(false);
@@ -5195,7 +5193,8 @@
                                 window.starWorking.anims.play('star_working', true);
                             }
                             sofa.anims.stop();
-                            sofa.setTexture('sofa_idle');
+                            // sofa.setTexture('sofa_idle');
+                            sofa.setVisible(false);
                         }
                     }
                 }

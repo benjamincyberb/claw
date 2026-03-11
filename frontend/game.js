@@ -302,10 +302,9 @@ function preload() {
   this.load.spritesheet('star_idle', '/static/star-idle-spritesheet' + getExt('star-idle-spritesheet.png'), { frameWidth: 128, frameHeight: 128 });
   this.load.spritesheet('star_researching', '/static/star-researching-spritesheet' + getExt('star-researching-spritesheet.png'), { frameWidth: 128, frameHeight: 105 });
 
-  this.load.image('sofa_idle', '/static/sofa-idle' + getExt('sofa-idle.png'));
   this.load.spritesheet('sofa_busy', '/static/sofa-busy-spritesheet' + getExt('sofa-busy-spritesheet.png'), { frameWidth: 256, frameHeight: 256 });
 
-  this.load.spritesheet('plants', '/static/plants-spritesheet' + getExt('plants-spritesheet.png'), { frameWidth: 160, frameHeight: 160 });
+
   this.load.spritesheet('posters', '/static/posters-spritesheet' + getExt('posters-spritesheet.png'), { frameWidth: 160, frameHeight: 160 });
   this.load.spritesheet('coffee_machine', '/static/coffee-machine-spritesheet' + getExt('coffee-machine-spritesheet.png'), { frameWidth: 230, frameHeight: 230 });
   this.load.spritesheet('serverroom', '/static/serverroom-spritesheet' + getExt('serverroom-spritesheet.png'), { frameWidth: 180, frameHeight: 251 });
@@ -718,6 +717,7 @@ function fetchStatus() {
 
         if (nextState === 'idle') {
           if (game.textures.exists('sofa_busy')) {
+            sofa.setVisible(true);
             sofa.setTexture('sofa_busy');
             sofa.anims.play('sofa_busy', true);
           }
@@ -729,7 +729,7 @@ function fetchStatus() {
           }
         } else if (nextState === 'error') {
           sofa.anims.stop();
-          sofa.setTexture('sofa_idle');
+          sofa.setVisible(false);
           star.setVisible(false);
           star.anims.stop();
           if (window.starWorking) {
@@ -738,7 +738,7 @@ function fetchStatus() {
           }
         } else if (nextState === 'syncing') {
           sofa.anims.stop();
-          sofa.setTexture('sofa_idle');
+          sofa.setVisible(false);
           star.setVisible(false);
           star.anims.stop();
           if (window.starWorking) {
@@ -747,7 +747,7 @@ function fetchStatus() {
           }
         } else {
           sofa.anims.stop();
-          sofa.setTexture('sofa_idle');
+          sofa.setVisible(false);
           star.setVisible(false);
           star.anims.stop();
           if (window.starWorking) {
@@ -850,6 +850,7 @@ function moveStar(time) {
             window.starWorking.anims.stop();
           }
           if (game.textures.exists('sofa_busy')) {
+            sofa.setVisible(true);
             sofa.setTexture('sofa_busy');
             sofa.anims.play('sofa_busy', true);
           }
@@ -861,7 +862,7 @@ function moveStar(time) {
             window.starWorking.anims.play('star_working', true);
           }
           sofa.anims.stop();
-          sofa.setTexture('sofa_idle');
+          sofa.setVisible(false);
         }
       }
     }
